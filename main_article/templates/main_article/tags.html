@@ -1,0 +1,16 @@
+{% load blog_tags %}
+<div class="aside-widget img-rounded">
+    <header>
+        <h3>标签集</h3>
+    </header>
+    <div class="body clearfix ">
+        <ul class="tags">
+        	{% get_all_tag as tagposts %}
+            {% for tag in tagposts %}
+            <li><a href="{% url 'main_article:tagRead' tag.id %}">{{tag.name}}</a></li>
+            {% empty %}
+                                   暂无标签
+            {% endfor %}                
+        </ul>
+    </div>
+</div>

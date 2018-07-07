@@ -1,0 +1,26 @@
+{% extends 'main_article/base.html' %}
+{% block content %}
+    <form method="post" action="{% url 'main_article:tagControl' %}">
+      {% csrf_token %}
+      <p>标签</p><input type="text" name="content">
+      <input class="btn" type="submit" value="新增">
+      <a class="btn" href="{% url 'main_article:article' %}">放弃</a>
+    </form>
+    
+  <table class="table table-striped table-hover">
+  <tr><th>名称</th><th>时间</th><th>删除</th></tr>
+  
+  {% for tag in tags %}
+    <tr>
+      <td><a href="{% url 'main_article:tagRead' tag.id %}">{{ tag.name }}</a></td>
+      <td>{{ tag.pubDateTime|date:'Y-m-d H:i' }}</td>
+      <td>
+      <form class="inlineBlock" method="post" action="{% url 'main_article:tagDelete' tag.id %}">
+        {% csrf_token %}
+        <input class="btn btn-danger" type="submit" value="Delete">
+      </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </table>
+{% endblock %}

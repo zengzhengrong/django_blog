@@ -1,0 +1,16 @@
+{% load blog_tags %}
+<div class="aside-widget img-rounded">
+    <header>
+        <h3>评论排行</h3>
+    </header>
+    <div class="body">
+        <ul class="clean-list">
+        {% get_comment_article as commentposts %}
+        {% for commentpost in commentposts %}
+            <li><a href="{% url 'main_article:articleRead' commentpost.id %}">{{commentpost.title}}</a></li>
+        {% empty %}
+                       暂无文章
+        {% endfor %}
+        </ul>
+    </div>
+</div>

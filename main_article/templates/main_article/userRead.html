@@ -1,0 +1,166 @@
+{% extends 'main_article/base.html' %}
+{% block content %}
+
+<div class="avatar">
+		<b>
+		{{userRead.user.username}}
+		</b>	
+		<br>	
+        <img class="img-rounded" width="85" height="85" src="{{ userRead.avatar.url }}" />
+        {% if request.user != userRead.user %}
+				<div>
+				<a  style="position:relative;bottom:55px;"href="#" data-id="{{ userRead.id }}" data-action="{% if request.user.profile in userRead.followers.all %}un{% endif %}follow" 
+					class=" userfollow {% if not request.user.is_authenticated %}no-login{% endif %} {% if request.user.profile in userRead.followers.all %}btn btn-danger{% else %} btn btn-primary {% endif %} pull-right">
+					{% if request.user.profile in userRead.followers.all %}
+					取消关注
+					{% else %}
+					关注
+					{% endif %}
+				</a>
+				</div>
+		{% endif %}
+        <div>
+	        {% with total_followers=userRead.followers.count %}
+		    <span class="count">
+		        <span class="total">{{ total_followers }}</span>
+		      	 <a>人关注ta了</a>
+		    </span>
+		    {% if not userRead.user == request.user %}
+		    <a href="{% url 'dialogs_detail' userRead.user.username %}" id="user-{{ userRead.user.username }}">私信</a>
+		    {% endif %}
+	        
+		</div>	
+		{% endwith%}
+	<!-- Nav tabs -->
+    <div class="card-block pb-0">       
+	    <ul class="nav nav-tabs" role="tablist">
+	        <li class="nav-item">
+	            <a class="nav-link active" data-toggle="tab" href="#info" role="tab">个人信息</a>
+	        </li>
+	        <li class="nav-item">
+	            <a class="nav-link" data-toggle="tab" href="#articles" role="tab">帖子            
+	            <span class="total">{{ user_articles_count }}</span>            
+	            </a>
+	        </li>
+	        <li class="nav-item">
+	            <a class="nav-link" data-toggle="tab" href="#comments" role="tab">回复
+	            <span class="total">{{ user_comments.count }}</span>
+	            </a>
+	        </li>
+	        <li class="nav-item">
+            	<a class="nav-link comment" data-toggle="tab" href="#actions" role="tab">动态</a>
+        	</li>
+	    </ul>
+    </div>
+    <div class="tab-content">
+    <!-- Tab panes -->
+    	<!-- userinfo -->
+	    <div id='info' class="tab-pane fade in active" role="tabpanel">
+		    <ul class="nav navbar-default img-rounded list-group list-group-flush">
+		       	<li class="list-group-item-text" >
+		       	<a>昵称:{% if userRead.nickname %}{{userRead.nickname}}{% else %}无{% endif %}</a>
+		       	</li>
+		       	<li class="list-group-item-text">      	
+		        <a> QQ:{% if userRead.qq %}{{userRead.qq}}{% else %}无{% endif %}</a>
+		        </li>
+		        <li class="list-group-item-text"> 
+		        <a> 微博:{% if userRead.weibourl %}{{userRead.weibourl}}{% else %}无{% endif %}</a>
+		        </li >
+		        <li class="list-group-item-text"> 
+		        <a>地址:{% if userRead.address %}{{userRead.address}}{% else %}无{% endif %}</a>
+		        </li> 
+		        <li class="list-group-item-text">
+		        <a>Email:{{userRead.user.email}}</a>
+		        </li> 
+		        <li class="list-group-item-text">
+		        <a>注册时间:{{userRead.user.date_joined|date:'Y年m月d日'}}</a>        
+		        </li>
+		        <li class="list-group-item-text"> 
+		        <a>最近登陆时间:{{userRead.user.last_login|date:'Y年m月d日'}}</a>
+		        </li>
+		        <li class="list-group-item-text"> 
+		        <a>管理员权限:{%　if userRead.user.is_staff %}有{% else %}无{% endif %}</a>
+		        </li>
+			</ul>
+		</div>
+		<!-- user_posts -->
+		<div class="tab-pane fade" id="articles" role="tabpanel">
+	    {% include 'main_article/user_articles_list_ajax.html' %} 
+	    
+        </div>
+        <div class="tab-pane fade" id="comments" role="tabpanel">
+	    {% include 'main_article/user_comments_list_ajax.html' %} 
+        </div>
+        <div class="tab-pane fade" id="actions" role="tabpanel">
+	    {% include 'action/user_actions.html' with myactions=actions %}  
+        </div>
+	</div>
+</div>
+{% endblock %}
+{% block domready %}
+    $('a.userfollow').click(function(e){
+	    if ($(this).hasClass('no-login')){
+	                alert('请在登陆后执行该操作');
+	                return false;
+	            }
+    	var y = $(this).data('id');
+        var action_userfollow = $(this).data('action');
+        
+        e.preventDefault();
+        $.post('{% url 'main_article:user_follow' %}',
+            {
+                id: y,
+                action: action_userfollow
+            },
+            function(data){
+                if (data['status'] == 'ok')
+                {
+                    var previous_action = $('a.userfollow').data('action');
+					
+                    // toggle data-action
+                    $('a.userfollow').data('action', previous_action == 'follow' ? 'unfollow' : 'follow');
+                    // add class or remove class
+                    $('a.userfollow').removeClass('btn btn-primary');               
+                    $('a.userfollow').addClass('btn btn-danger');
+					$('a.userfollow').text(previous_action == 'follow' ? '取消关注' : '关注');
+                    //
+                   	if (previous_action == 'unfollow'){                  	
+                    $('a.userfollow').removeClass('btn btn-danger');
+                    $('a.userfollow').addClass('btn btn-primary');
+                                                         
+                }
+                	
+                    // update total likes
+                    var previous_followers = parseInt($('span.count .total').text());
+                    $('span.count .total').text(previous_action == 'follow' ? previous_followers + 1 : previous_followers - 1);
+                }
+        });
+
+    });
+    //scroll
+    var page = 1;
+    var empty_page = false;
+    var block_request = false;     
+    $(window).scroll(function() {
+	        var margin = $(document).height() - $(window).height() - 200;
+	        if  ($(window).scrollTop() > margin && empty_page == false && block_request == false) {
+	            block_request = true;
+	            page += 1;
+	            $.get('?page=' + page, function(data) {
+	                if(data == '')
+	                {
+	                    empty_page = true;
+	                }
+	                else {
+	                    block_request = false;
+	                    $('#articles').append(data);
+	                    
+	                    
+	                }
+	            });
+	        }
+	        
+	    });
+
+{% endblock %}
+

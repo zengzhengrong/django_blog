@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <title>zengzhengrongblog</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <link rel="icon" href="{% static 'main_article/img/timg2.jpg'%}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'main_article/css/bootstrap.min.css' %}"}>
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'main_article/css/font-awesome/css/font-awesome.min.css' %}">
+
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600|PT+Serif:400,400italic' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="{% static 'main_article/css/style.css' %}" id="theme-styles">
+    <!--ckeditor-->
+    <link rel="stylesheet" href="{% static 'ckeditor/ckeditor/plugins/prism/lib/prism/prism.css' %}" id="ckeditor-styles">
+    
+    {% block css %}
+    {% endblock %}
+    
+    <!--[if lt IE 9]>      
+        <script src="js/vendor/google/html5-3.6-respond-1.1.0.min.js"></script>
+    <![endif]-->
+    
+</head>
+<body>
+    <header>
+    {% include 'main_article/menu.html'%}
+    {% include 'main_article/categorymenu.html'%}
+    {% block extra_head %}
+    {% endblock %}
+    </header>
+        <div class="widewrapper main">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 blog-main">
+                {% include 'main_article/messages.html' %}
+                    {% block body %}
+                    {% block content %}
+                    
+                    {% endblock %}
+                    {% endblock %}
+                </div>
+                <aside class="col-md-4 blog-aside">
+                                       
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+       {% include 'main_article/about_contact.html'%} 
+    </footer>
+    
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="{% static 'main_article/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'main_article/js/modernizr.js' %}"></script>
+    <script src="{% static 'ckeditor/ckeditor/plugins/prism/lib/prism/prism_patched.min.js' %}"></script>
+
+</body>
+</html>

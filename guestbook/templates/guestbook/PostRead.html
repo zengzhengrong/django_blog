@@ -1,0 +1,74 @@
+{% extends 'guestbook/base.html' %}
+{% load staticfiles %}
+
+{% block css %}
+
+<link rel="stylesheet" href="{% static 'easy_comment/css/comment.css' %}">
+<link rel="stylesheet" href="{% static 'main_article/css/zoom.css' %}">
+
+
+{% endblock %}
+{% block content %}
+<article class="blog-post">
+    <div class="meta">
+        <h2><a href="#">{{post.title}}</a></h2>
+        <div class="meta aside-widget img-rounded">
+            <i class="fa fa-user"></i>
+             <a href="{% url 'main_article:userRead' post.author.id %}">
+            {% if post.author.profile.nickname %}  
+            	{{post.author.profile.nickname}}
+            {% else %}
+            	{{post.author}}
+            {% endif %} 
+              </a>
+            <i class="fa fa-calendar"></i>
+             {{ post.pubDateTime|date:'Y-m-d H:i' }}
+             <i class="fa fa-eye"></i>
+             {{post.read_num}}                       
+            <span class="data"><a href="#comments"><i class="fa fa-comments">{{comment_num}}</i></a></span>    
+            <i class="fa fa-tag"></i> 
+            {% for tag in post.tags.all %}                       
+            <a class="sm" href="{% url 'main_article:tagRead' tag.id %}">{{ tag.name }}
+            {% if not forloop.last %}
+            ,
+            {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+        <div class="article_content">{{ post.content|safe}}</div>
+		<!-- 更新时间显示 -->
+		{% if post.pubDateTime|date:'Y-m-d H:i' == post.upDateTime|date:'Y-m-d H:i' %}
+		{% else %}
+		更新于:{{post.upDateTime|date:'Y-m-d H:i' }}
+		{% endif %}   
+    </div>
+</article>
+<!--  
+<aside class="social-icons clearfix ">
+    
+    <a href="#likes">
+    <i class="fa fa-thumbs-o-up img-rounded" >
+    {{article.likes}}
+    </i>  
+    </a>
+    
+	
+</aside>
+-->
+
+<!-- 用户点赞 -->
+
+
+
+
+
+<hr>
+<script type="text/javascript">
+//给正文中的图片添加缩放属性
+$(".article_content img").attr("data-action", "zoom");
+</script>
+<script src="{% static 'ckeditor/ckeditor/config.js' %}"></script>
+<script type="text/javascript" src="{% static 'main_article/js/zoom.min.js' %}"></script>
+{% endblock %}
+
+

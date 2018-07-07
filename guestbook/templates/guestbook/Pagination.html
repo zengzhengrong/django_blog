@@ -1,0 +1,21 @@
+ <div class="paging">
+  <span class="step-links">
+        {% if guestbook_posts.has_previous %}
+            <a href="?page={{ guestbook_posts.previous_page_number }}">上一页</a>
+        {% endif %}
+        <span class="current">
+        {% if guestbook_posts == None %}
+                        第{{ guestbook_posts.number }} 共 {{ guestbook_posts.paginator.num_pages }}
+        </span>
+        {% endif %}
+        {% if articles.has_next %}
+            <a href="?page={{ guestbook_posts.next_page_number }}">下一页</a>
+        {% endif %}
+   </span>
+    <br>
+    {% for i in guestbook_posts.paginator.page_range %}
+	    {% if guestbook_posts.paginator.num_pages != 1  %}   
+	          <a href="?page={{ i }}">{{i}}</a>
+	    {% endif %}
+    {% endfor %}
+ </div>

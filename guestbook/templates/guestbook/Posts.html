@@ -1,0 +1,48 @@
+ {% load staticfiles %}   
+ {% for post in guestbook_posts %}              
+<div>  
+     <div>        
+          <article>        
+              <header>      
+                  <!-- <img src="{% static 'main_article/img/1.jpg'%}">    -->       
+                  <h4>
+                  <a class="guestbook" href="{% url 'guestbook:postRead' post.id %}"><b>{{ post.title }}</b></a>
+                  </h4>
+               <div>
+               <i class="fa fa-calendar"></i><a class="guestbook">{{ post.pubDateTime|date:'Y-m-d' }}</a>
+               <a class="fa fa-user"></a><a class="guestbook"  href="{% url 'main_article:userRead' post.author.id %}">
+               {% if post.author.profile.nickname %}  
+               {{post.author.profile.nickname}}
+               {% else %}
+               {{post.author}}
+               {% endif %}             
+               </a>            
+               <a class="fa fa-comments" href="#"></a> <a class="guestbook">{{post.comment_num}}</a>                           
+               {% for tag in post.tags.all %}  
+               {% if forloop.first %}                
+               <i class="fa fa-tag"></i>
+               {% endif %}                          
+               <a href="#">{{ tag.name }}
+               {% if not forloop.last %}
+               ,
+               {% endif %} 
+			   </a>
+               {% endfor %}         
+               {% if user.is_superuser%}
+               <a class="btn btn-info" href="{% url 'guestbook:postUpdate' post.id %}">修改</a>
+               <form class="inlineBlock" method="post" action="{% url 'guestbook:postDelete' post.id %}" onclick="return del()">
+               {% csrf_token %}
+               <input class="btn" type="submit" value="Delete">
+               </form>	                  
+               {% endif %}             
+              </div>
+               <hr>
+              </header>                      
+          </article>         
+      </div>
+</div>
+{% empty %}
+暂无留言
+{% endfor %} 
+
+

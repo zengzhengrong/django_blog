@@ -1,0 +1,9 @@
+<span class="separator">&#x2F;</span>
+{{articlecount}}
+<span class="separator">&#x2F;</span>
+{% if article.id %}
+&nbsp<a class="btn" href="{% url 'main_article:articleUpdate' article.id %}">修改</a>
+{% endif %}
+{% if post.id%}
+&nbsp<a class="btn" href="{% url 'guestbook:postUpdate' post.id %}">修改</a>
+{% endif %}

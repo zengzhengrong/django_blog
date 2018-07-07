@@ -1,0 +1,11 @@
+{% extends 'main_article/base.html' %}
+{% block content %}
+<p>已选择：<b>{{ category }}</b>
+ <form class="inlineBlock" method="post" action="{% url 'guestbook:g_categoryUpdate' category.id %}">
+    {% csrf_token %} 
+    <input type="text" name="content" value="{{ category }}">       
+    <input class="btn" type="submit" value="提交">
+    <a class="btn" href="{% url 'main_article:categoryControl' %}">放弃</a>
+ </form>
+ 
+{% endblock %}

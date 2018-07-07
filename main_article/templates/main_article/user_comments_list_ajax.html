@@ -1,0 +1,44 @@
+<ul class="list-group list-group-flush">
+    {% for comment in user_comments %}
+	<li class="list-group-item">
+      <div class="row no-gutters w-100">
+          <div>		           	
+          <div class="pull-left ">
+          {% if comment.user.profile.nickname %}
+           {% if comment.user.username == request.user.username %}
+         	<b>我</b>
+           {% else %}
+           <b>{{comment.user.profile.nickname}}</b>
+           {% endif %}
+          {% else %}
+          	   <b>{{comment.user.username}}</b>
+          {% endif %}
+          
+          {% if comment.parent %}
+           &nbsp回复<a class="usernameclick" href="{% url 'main_article:userRead' comment.parent.user.id %}">		        
+           (
+           {% if comment.parent.user.profile.nickname %}
+           {{comment.parent.user.profile.nickname}}
+           {% else %}
+           {{comment.parent.user.username}}
+           {% endif %}	           
+           )
+          {% else %}
+          		&nbsp评论
+          {% endif %}
+          
+          </a>&nbsp在&nbsp&nbsp<a class="user-readpost-target" href="{% url 'main_article:articleRead' comment.post.id %}#c{{comment.id}}">{{comment.post}}</a>:</div>
+          <span class="text-muted small pull-right">{{comment.submit_date|timesince}}前</span>
+          </div>
+          
+      </div>
+      <div class="mark py-1 mt-1 small w-100">
+          <p>{{comment.content|safe}}</p>
+      </div>
+      </li>
+     	{% empty %}                      
+       <li class="list-group-item">
+                       没有评论过帖子
+       </li>
+      {% endfor %}                   
+</ul>

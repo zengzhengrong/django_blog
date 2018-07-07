@@ -1,0 +1,21 @@
+<ul class="list-group list-group-flush img-rounded">
+	{% for post in user_articles %}
+
+	 <li class="list-group-item">
+	 <a href="{% url 'main_article:articleRead' post.id %}" class="article_title">{{post.title}}</a><span class="comment-time pull-right">{{post.pubDateTime|timesince}}前</span>
+	 </li>
+	{% if forloop.last %}  
+		{% if forloop.counter == user_articles_count %}
+		<li><a>已全部显示</a></li>
+		{% else %}
+		<li><a class="article_title" href="javascript:void(0);">往下滚动查看更多</a></li>
+		{% endif %}	
+	{% endif %}  
+  
+	{% empty %}                      
+	 <li class="list-group-item">
+	                 没有发表过帖子
+	 </li>
+	{% endfor %}      
+</ul>
+

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <title>zzrblog</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <link rel="icon" href="{% static 'main_article/img/timg2.jpg'%}" type="image/x-icon">
+    
+    
+	  <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+   
+    <link rel="stylesheet" href="{% static 'main_article/css/font-awesome/css/font-awesome.min.css' %}">
+    
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600|PT+Serif:400,400italic' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="{% static 'main_article/css/style.css' %}" id="theme-styles">
+    <!--ckeditor-->
+    <link rel="stylesheet" href="{% static 'ckeditor/ckeditor/plugins/prism/lib/prism/prism.css' %}" id="ckeditor-styles">
+    
+    {% block css %}
+    {% endblock %}
+    
+    <!--[if lt IE 9]>      
+        <script src="js/vendor/google/html5-3.6-respond-1.1.0.min.js"></script>
+    <![endif]-->
+    
+</head>
+<body>
+    
+    <header>
+    {% include 'main_article/menu.html'%}
+    {% include 'main_article/categorymenu.html'%}
+    </header>
+        <div class="widewrapper main">
+        {% block notifications %}
+    
+        {% endblock %}
+        {% block chat %}
+        {% endblock %}
+        <div class="container">
+
+            <div class="row">
+                <div class="col-md-8 blog-main">
+                {% include 'main_article/messages.html' %}
+                {% include 'main_article/searchform.html' %}
+                       {% block content %}
+
+                       {% endblock %}
+                       {% block comment%}
+                       {% endblock %}
+                </div>
+                <aside class="col-md-4 blog-aside">
+                	{% if similar_articles %}
+                	
+                	{% include 'main_article/similarpost.html'%} 
+	 				{% endif %}		
+	 				{% if userprofile %}
+	 				{% include 'main_article/My_postList.html'%} 
+	 				{% endif %}
+	 				{% if not request.path == '/notifications/' %}
+		 				{% if not request.path == '/notifications/unread/' %}
+                        {% if master %}
+                          {% include 'main_article/aboutme.html'%}		
+                        {% endif %}			
+		                    {% include 'main_article/featuredpost.html' %}    
+		                    {% include 'main_article/relatedpost.html' %}
+                        {% include 'main_article/archivepost.html' %}
+		                    {% include 'main_article/tags.html'%}                       
+	                    {% endif %}
+                    {% endif %}
+
+                    
+                </aside>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+       {% include 'main_article/about_contact.html'%} 
+    </footer>
+    
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="{% static 'main_article/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'main_article/js/modernizr.js' %}"></script>
+    <script type="text/javascript" src="{% static 'ckeditor/ckeditor/plugins/prism/lib/prism/prism_patched.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'notifications/notice.js' %}"></script>
+    <!-- jquerycookie,与cookie交互的jquery -->
+    <script src=" http://cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.min.js "></script>
+    <!-- confirm Delete -->
+    <script type="text/javascript">
+    function del() 
+    {
+	var msg = "您真的确定要删除吗？\n确认后无法撤回！";
+	if (confirm(msg)==true)
+	{return true;}
+	else
+	{return false;}
+	}
+    </script>
+    <!-- confirm POST -->
+    <script type="text/javascript">
+    function post() 
+    {
+  var msg = "您确定要发表吗";
+  if (confirm(msg)==true)
+  {document.body.onbeforeunload = null;
+  return true;}
+  else
+  {document.body.onbeforeunload = null;
+  return false;}
+  }
+  
+    </script>
+    <!-- confirm UPDATE -->
+    <script type="text/javascript">
+    function update() 
+    {
+  var msg = "您确定要修改吗";
+  if (confirm(msg)==true)
+  {document.body.onbeforeunload = null;
+  return true;}
+  else
+  {document.body.onbeforeunload = null;
+  return false;}
+  }
+  
+    </script>
+
+    <!-- confirm clicked-->
+    
+    <script type="text/javascript">
+    function clicked() 
+    {
+    var  msg= "你已经签到，请勿重复点击";
+    alert(msg);
+    return false;
+    }
+    </script>
+    <!-- confirm click success -->
+    <script type="text/javascript">
+    function click_success()
+    {
+      var msg = "签到成功，获得10饼果";
+      alert(msg);
+    }
+    </script>
+    
+    <!-- 预处理js cookie交互跨站请求-->
+    {% block extra_js %}{% endblock extra_js %}
+	<script>
+	var csrftoken = $.cookie('csrftoken');
+	  function csrfSafeMethod(method) {
+	    // these HTTP methods do not require CSRF protection
+	    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+	$.ajaxSetup({
+	  beforeSend: function(xhr, settings) {
+	   if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+	      xhr.setRequestHeader("X-CSRFToken", csrftoken);
+	  }
+	}
+	});
+
+  	$(document).ready(function(){
+    {% block domready %}
+    {% endblock %}
+    });
+	</script>
+	<!-- iphone js -->
+	<script>
+	$(document).ready(function(){
+	    $('.dropdown-toggle').dropdown();
+	});
+	</script>
+  <script type="text/javascript">
+    $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+    })
+  </script>
+  <script type="text/javascript">
+    $(function(){   
+        $(window).scroll(function() {      
+            if($(window).scrollTop() >= 100){
+                $('.actGotop').fadeIn(300); 
+            }else{    
+                $('.actGotop').fadeOut(300);    
+            }  
+        });
+        $('.actGotop').click(function(){
+        $('html,body').animate({scrollTop: '0px'}, 800);});   
+    });
+  </script>
+</body>
+</html>

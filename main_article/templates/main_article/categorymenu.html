@@ -1,0 +1,41 @@
+{% load blog_tags %}
+        <div class="widewrapper subheader">
+            <div class="container">
+                <div class="clean-breadcrumb">
+                <!-- 分类栏显示 -->
+                    {% if guestbook_posts_session %}
+                    <a class="btn btn-clean-one" href="{% url 'guestbook:posts' %}">全部</a>
+                    {% get_all_guestbook_category as guestbook_categorys %}
+                    {% for g_category in guestbook_categorys %}
+                    <a class="btn btn-clean-one" href="{% url 'guestbook:g_categoryRead' g_category.id %}">{{g_category.name}}</a>
+                    {% endfor %}
+                    {% else %}
+                    <a class="btn btn-clean-one" href="{%　url 'main_article:article' %}">全部</a>
+                    {% get_all_category as categorys %}
+                    {% for category in categorys %}
+                    <a class="btn btn-clean-one" href="{% url 'main_article:categoryRead' category.id %}">{{category.name}}</a>
+                    
+                    {% endfor %} 
+                    {% endif %}
+                 <!-- 功能栏显示 -->   
+                    {% if article.id or post.id %}
+                      {% if article.author.username == user.username or post.author.username == user.username %}
+                      {% include 'main_article/read_articleupdate.html'%}
+                      {% elif user.is_superuser%}
+                      {% include 'main_article/read_articleupdate.html'%}
+                      {% endif %}
+                    {% else %}                      
+                      <span class="separator">&#x2F;</span> 
+                      {{articlecount}}
+                      <span class="separator">&#x2F;</span>
+                    
+                    {% endif %} 
+                    {% if user.is_superuser%}
+                    {% if not guestbook_posts_session %}
+                    <a class="btn" href="{% url 'main_article:categoryControl' %}">分类控制</a>
+                    <a class="btn" href="{% url 'main_article:tagControl' %}">标签控制</a>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>

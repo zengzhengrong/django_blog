@@ -1,0 +1,54 @@
+{% extends 'main_article/base.html' %}
+{% load staticfiles %}
+{% load notifications_tags %}
+
+{% block css %}    
+    <link rel="stylesheet" href="{% static 'easy_comment/css/comment.css' %}">
+{% endblock %}
+{% block notifications %}
+    <div style="" class="container">
+        <div class="col-md-12"><h3 class="notice-head">通知</h3></div>
+        <div class="col-md-4">
+            <div class="list-group">
+            {% notifications_unread as unread_count %}
+                  <a href="{% url 'notifications:all' %}" class="list-group-item {% if request.path == '/notifications/' %}active{% endif %}">
+    				全部
+                      <span class="badge"></span>
+                  </a>
+                  <a href="{% url 'notifications:unread' %}" class="list-group-item {% if request.path != '/notifications/' %}active{% endif %}">
+                   	 未读 
+                      <span class="badge">{% if unread_count > 0 %}{{ unread_count }}{% endif %}</span>
+                  </a>
+                   <a class="list-group-item" href="{% url 'notifications:mark_all_as_read' %}">
+                 	 标记全部已读
+                  </a>
+                  <a class="list-group-item" href="{% url 'main_article:article' %}">
+                 	 回主页
+                  
+                  </a>
+                 
+            </div>
+        </div>
+        <div class="col-md-8">
+            <ul class="notifications">
+              {% for notice in notifications %}
+                {% include 'notifications/notice.html' %}
+              {% empty %}
+
+            </ul>
+            <div class="jumbotron">
+               <h4>暂无通知</h4>
+             </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $(".list-group a").click(function () {
+                $(this).addClass('active');
+                $(this).siblings().removeClass('active');
+            });
+            $(".notifications img").removeAttr('style');
+        });
+    </script>
+{% endblock %}

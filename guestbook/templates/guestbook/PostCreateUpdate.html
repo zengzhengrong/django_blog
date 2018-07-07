@@ -1,0 +1,18 @@
+{% extends 'guestbook/base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% block content %}
+{% if post %}
+    <form method="post" action="{% url 'guestbook:postUpdate' post.id %}">
+{% endif %}
+    <form method="post" action="{% url 'guestbook:postCreate' %}">
+      
+      {% csrf_token %}
+      {{ postform.media }}
+      {{ postform|crispy }}
+           
+      <input class="btn" type="submit" value="发表" >
+      <a class="btn" href="{% url 'main_article:article' %}">放弃</a>
+    </form>
+
+{% endblock %}

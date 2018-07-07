@@ -1,0 +1,58 @@
+{% extends 'main_article/base.html' %}
+{% block content %}
+<a class="fa fa-flag-checkered"><b class="warningfontcolor">注意：删除分类板块会将所属文章一并删除</b></a>
+    <!-- 主页分类 -->
+    
+    <form method="post" action="{% url 'main_article:categoryControl' %}">
+    <p>主页分类</p><input type="text" name="content">
+      {% csrf_token %}    
+      <input class="btn btn-primary" type="submit" value="新增">
+      <a class="btn btn-default" href="{% url 'main_article:article' %}">放弃</a>
+    </form>
+  <table style="margin-top:20px;" class="table table-striped table-hover">
+  <tr><th>名称</th><th>时间</th><th>修改</th><th>删除</th></tr>
+  
+  
+  {% for category in categorys %}
+    <tr>
+      <td><a href="{% url 'main_article:categoryRead' category.id %}">{{ category.name }}</a></td>
+      <td>{{ category.pubDateTime|date:'Y-m-d H:i' }}</td> 
+      <td><a class="btn btn-primary" href="{% url 'main_article:categoryUpdate' category.id %}">修改</a></td>
+      <td>
+      <form class="inlineBlock" method="post" action="{% url 'main_article:categoryDelete' category.id %}" onclick="return del()">
+        {% csrf_token %}
+        <input class="btn btn-danger" type="submit" value="Delete">
+      </form>
+      </td>
+    </tr>
+
+  {% endfor %}
+  </table>
+  <!-- 留言分类 -->
+  
+  <form method="post" action="{% url 'main_article:categoryControl' %}">
+  <p style="margin:0px;">留言分类</p><input type="text" name="guestbook_content">
+      {% csrf_token %}   
+      <input class="btn btn-primary" type="submit" value="新增">
+      <a class="btn btn-default" href="{% url 'main_article:article' %}">放弃</a>
+   </form>
+  <table style="margin-top:20px;" class="table table-striped table-hover">
+  <tr><th>名称</th><th>时间</th><th>修改</th><th>删除</th></tr>  
+  
+  
+  {% for guestbook_category in guestbook_categorys %}
+    <tr>
+      <td><a href="{% url 'main_article:categoryRead' guestbook_category.id %}">{{ guestbook_category.name }}</a></td>
+      <td>{{ guestbook_category.pubDateTime|date:'Y-m-d H:i' }}</td> 
+      <td><a class="btn btn-primary" href="{% url 'guestbook:g_categoryUpdate' guestbook_category.id %}">修改</a></td>
+      <td>
+      <form class="inlineBlock" method="post" action="{% url 'guestbook:g_categoryDelete' guestbook_category.id %}" onclick="return del()">
+        {% csrf_token %}
+        <input class="btn btn-danger" type="submit" value="Delete">
+      </form>
+      </td>
+    </tr>
+
+  {% endfor %}
+  </table>
+{% endblock %}

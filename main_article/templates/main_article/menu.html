@@ -1,0 +1,105 @@
+{% load staticfiles %}
+{% load blog_tags %} 
+<style type="text/css">
+    img:hover{  transform: rotate(180deg); 
+        -webkit-transform: rotate(360deg); 
+         -moz-transform: rotate(360deg);  
+         -o-transform: rotate(360deg);  
+         -ms-transform: rotate(360deg);
+     } 
+</style>
+        <div class="widewrapper masthead">
+            <div class="container">
+                {% if request.user.is_active %}
+                <a id="#top" href="{% url 'main_article:article' %}" id="logo">
+                    <img class="round_icon" src="{{ user.profile.avatar.url }}" alt="头像">
+                </a>                
+                {% else %}
+                <a id="#top" href="{% url 'main_article:article' %}" id="logo">
+                    <img src="{% static 'main_article/img/default.jpg' %}" alt="默认头像">
+                </a>
+                {% endif %}
+                <div id="mobile-nav-toggle" class="pull-right">
+                    <a href="#" data-toggle="collapse" data-target=".clean-nav .navbar-collapse">
+                        <i class="fa fa-bars"></i>
+                    </a>
+                </div>
+
+                <nav class="pull-right clean-nav navbar navbar-expand-sm ">
+                    <div class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav">
+                          
+                            <li class="nav-item ">
+                                <a class="glyphicon glyphicon-home nav-link" href="{% url 'main_article:article' %}">首页</a>
+                            </li>
+                            {% if request.user.is_active %}
+                              {% if clickstuts %}
+                              <li class="nav-item ">
+                                  <a class="glyphicon glyphicon-calendar nav-link" href="{% url 'main_article:user_daily_click' %}" onclick="{% if clickstuts == '已签到' %} return clicked() {% else %} click_success() {% endif %}">{{clickstuts}}</a>
+                                  
+                              </li>
+                              {% endif %}
+                            {% endif %}
+                            <li class="nav-item">
+                                <a class="glyphicon glyphicon-bell nav-link" href="{% url 'notifications:all' %}"><span class="live-notify-badge"></span>通知</a>
+                                
+                            </li>  
+							<li class="nav-item ">
+                                <a class="glyphicon glyphicon-book nav-link" href="{% url 'guestbook:posts' %}">留言板</a>
+                            </li>
+                            <li class="nav-item ">
+                                <a class="glyphicon glyphicon-search nav-link" href="#searchModal" data-toggle="modal">搜索</a>
+                            </li>
+                            <li class="dropdown">  
+                                {% if user.is_authenticated %}
+                                
+                                    <a  class="glyphicon glyphicon-arrow-down dropdown-toggle" data-toggle="dropdown" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">                             
+                                        
+                                        <span class="user_name">  
+                                        {% if user.profile.nickname %}  
+                                        {{user.profile.nickname}}
+                                        {% else %}
+                                        {{user.username}}
+                                        {% endif %}
+                                        </span>
+                                     
+                                    </a>
+                                  
+                                    <ul class="menu-item dropdown-menu img-rounded" aria-labelledby="dropdownMenu1">
+                                        <li><a class="text-muted" href="{% url 'notifications:all' %}">消息<span class="live-notify-badge"></span></a></li>
+                                        <li><a class="text-muted" href="{% url 'main_article:userProfile' %}">个人信息</a></li>
+                                        {% if guestbook_posts_session %}
+                                        <li><a class="text-muted" href="{% url 'guestbook:postCreate' %}">我要发表</a></li>
+                                        {% else %}           
+                                        <li><a class="text-muted" href="{% url 'main_article:articleCreate' %}">我要发表</a></li>
+                                        {% endif %}
+                                        {% if request.user.is_superuser %}
+                                        <li><a class="text-muted" href="{% url 'main_article:userList' %}">用户列表</a></li>
+                                        {% endif %}
+                                        <li><a class="text-muted" href="{% url 'main_article:user_following' %}">我关注的</a></li>
+                                        {% check_dialogs_messages request as session %}
+                                          {% if session == 'chat' %}
+                                          <li><a class="text-muted" href="{% url 'dialogs' %}">我的私信</a></li>
+                                          {% endif %}
+                                         
+                                        <li><a class="text-muted" href="{% url 'account_logout' %}">登出</a></li>
+                                        
+                                        
+                                    </ul>
+                                </li>
+                                
+                              	 
+ 								
+ 								
+                                
+                                {% else %}
+                                <li><a class="glyphicon glyphicon-log-in" href="{% url 'account_login' %}">登录</a></li>
+                                {% endif %}                                
+                                
+                                               
+                        </ul>
+                    </div>
+                </nav>        
+
+            </div>
+        </div>

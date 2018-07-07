@@ -1,0 +1,15 @@
+<div class="aside-widget img-rounded">
+    <header>
+        <h3>我的发表</h3>
+    </header>
+    <div class="body">
+        <ul class="clean-list ">
+        {% for post in myposts %}
+            <li><a href="{% url 'main_article:articleRead' post.id %}">{{post.title}}</a></li>
+        {% empty %}
+                       暂无文章
+        {% endfor %}
+        
+        </ul>
+    </div>
+</div>

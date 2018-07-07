@@ -1,0 +1,129 @@
+{% extends 'main_article/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="local-header"><h4>个人资料</h4></div>
+<form style="font-size: 14px;"class="profile" method="post" enctype="multipart/form-data" action="#">
+    <!--头像-->
+    <div class="avatar">
+	    
+        <img class="img-rounded" src="{{ userRead.avatar.url }}">
+        
+        {% with total_followers=userRead.followers.count %}
+        <br>
+        <div>      
+		<span class="count">
+		    <span class="total">{{ total_followers }}</span>
+		  	 <a>人关注我了</a>
+		  	 <a class="orange_font" href="{% url 'main_article:user_followers' %}">查看</a>
+		</span>
+		{% endwith%}
+		</div>
+    </div>
+    {% csrf_token %}
+	{{ userprofileform|crispy }}
+    
+    
+    <button class="btn btn-info" type="submit">更新资料</button>
+</form>
+
+<div class="card-block pb-0">       
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#info" role="tab">个人信息</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link article" data-toggle="tab" href="#articles " role="tab">帖子            
+            <span class="total">{{ user_articles_count }}</span>            
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link comment" data-toggle="tab" href="#comments" role="tab">回复
+            <span class="total">{{ user_comments.count }}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link comment" data-toggle="tab" href="#actions" role="tab">动态</a>
+        </li>
+        
+    </ul>
+</div>
+<div class="tab-content">
+    <!-- Tab panes -->
+    	<!-- userinfo -->
+	    <div id='info' class="tab-pane fade in active" role="tabpanel">
+		    <ul class="nav navbar-default img-rounded list-group list-group-flush">
+		       	<li class="list-group-item-text" >
+		       	<a>昵称:{% if userRead.nickname %}{{userRead.nickname}}{% else %}无{% endif %}</a>
+		       	</li>
+		       	<li class="list-group-item-text">      	
+		        <a> QQ:{% if userRead.qq %}{{userRead.qq}}{% else %}无{% endif %}</a>
+		        </li>
+		        <li class="list-group-item-text"> 
+		        <a> 微博:{% if userRead.weibourl %}{{userRead.weibourl}}{% else %}无{% endif %}</a>
+		        </li >
+		        <li class="list-group-item-text"> 
+		        <a>地址:{% if userRead.address %}{{userRead.address}}{% else %}无{% endif %}</a>
+		        </li> 
+		        <li class="list-group-item-text">
+		        <a>Email:{{userRead.user.email}}</a>
+		        </li> 
+            <li>
+            <div class="list-group-item-text" > 
+            &nbsp&nbsp&nbsp
+            <a>饼果:{{userRead.bonuspoints}}个</a>
+            <a class="orange_font" href="">转让</a>
+            </div>
+            </li>
+		        <li class="list-group-item-text">
+		        <a>注册时间:{{userRead.user.date_joined|date:'Y年m月d日'}}</a>        
+		        </li>
+		        <li class="list-group-item-text"> 
+		        <a>最近登陆时间:{{userRead.user.last_login|date:'Y年m月d日'}}</a>
+		        </li>
+		        <li class="list-group-item-text"> 
+		        <a>管理员权限:{%　if userRead.user.is_staff %}有{% else %}无{% endif %}</a>
+		        </li>
+			</ul>
+		</div>
+		<!-- user_posts -->
+		<div class="tab-pane fade " id="articles" role="tabpanel">
+	    {% include 'main_article/user_articles_list_ajax.html' %} 
+	      
+        </div>
+        <div class="tab-pane fade" id="comments" role="tabpanel">
+	    {% include 'main_article/user_comments_list_ajax.html' %}      
+        </div>
+        <div class="tab-pane fade" id="actions" role="tabpanel">
+	    {% include 'action/user_actions.html' %}      
+        </div>
+</div>
+{% endblock %}
+{% block domready %}
+    var page = 1;
+    var empty_page = false;
+    var block_request = false;
+    
+	$(".article").click(function(){
+	    $(window).scroll(function() {
+	        var margin = $(document).height() - $(window).height() - 200;
+	        if  ($(window).scrollTop() > margin && empty_page == false && block_request == false) {
+	            block_request = true;
+	            page += 1;
+	            $.get('?page=' + page, function(data) {
+	                if(data == '')
+	                {
+	                    empty_page = true;
+	                }
+	                else {
+	                    block_request = false;
+	                    $('#articles').append(data);
+	                    
+	                    
+	                }
+	            });
+	        }
+	        
+	    });
+ });
+{% endblock %}

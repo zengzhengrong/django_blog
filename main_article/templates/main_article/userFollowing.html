@@ -1,0 +1,39 @@
+{% extends 'main_article/base.html' %}
+{% block content %}
+<div class="local-header userlikes"><h4>我正在关注：</h4></div>
+{% for following in myFollowings %}
+<div id="people-list">	  
+	  <hr>     
+      	{% with userprofile=following.to_user %}
+        <div>
+
+	          <a class="avatar" href="{% url 'main_article:userRead' userprofile.id %}"><img class="img-rounded" src="{{ userprofile.avatar.url }}"></a>             
+	          <a href="{% url 'main_article:userRead' userprofile.id %}" class="usernameclick">
+	        
+	          {% if userprofile.nickname %}
+	          	{{userprofile.nickname}}
+	          {% else %}
+	          	{{userprofile.user}}
+	          {% endif %}</a>      
+	          <div id="lately_action">
+		          <ul class="navbar-primary img-rounded">
+		          {% for action in userprofile.user.actions.all|slice:":4" %}
+		          {% with target=action.action %}	
+		          {% if target %}                
+					<li class="center-block"><b>{{action.verb}}:</b><a class="action_action"
+					 href="{{target.get_absolute_url}}{% if action.get_ct_name == '文章留言' %}
+					 #c{{action.ct_id}}{% endif %}">
+					{{target}}</a></li>
+				  {% endif %}
+				  {% endwith %}	
+				  {% empty %}	
+				 	 该用户最近无动态					  
+				  {% endfor %}			  
+		          </ul>	 	                   	          
+	          </div>
+         </div>
+      {% endwith %}     
+</div>
+{% endfor %}
+
+{% endblock %}

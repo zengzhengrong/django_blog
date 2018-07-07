@@ -1,0 +1,153 @@
+{% extends 'main_article/base.html' %}
+{% load staticfiles %}
+
+{% block css %}
+
+<link rel="stylesheet" href="{% static 'easy_comment/css/comment.css' %}">
+<link rel="stylesheet" href="{% static 'main_article/css/zoom.css' %}">
+
+
+{% endblock %}
+{% block content %}
+<article class="blog-post">
+    <header>
+       
+        <div class="lead-image">
+            <!--<img src="img/single-post.jpg" alt="" class="img-responsive">  -->
+            
+        </div>
+    </header>
+    <div class="meta">
+        <h2><a href="{% url 'main_article:articleRead' article.id %}">{{article.title}}</a></h2>
+        <div class="meta aside-widget img-rounded">
+            <i class="fa fa-user"></i>
+             <a href="{% url 'main_article:userRead' article.author.id %}" >
+            {% if article.author.profile.nickname %}  
+            	{{article.author.profile.nickname}}
+            {% else %}
+            	{{article.author}}
+            {% endif %}  
+             </a>
+            <i class="fa fa-calendar"></i>
+             {{ article.pubDateTime|date:'Y-m-d H:i' }}
+             <i class="fa fa-eye"></i>
+             {{article.read_num}}                       
+            <span class="data"><a href="#comments"><i class="fa fa-comments"></i></a></span>
+            {{comment_num}}
+            <a id="likes" href="{% url 'main_article:articleLike' article.id %}"><i class="fa fa-thumbs-o-up" ></i></a>
+            {{article.likes}}
+            <i class="fa fa-tag"></i> 
+            {% for tag in article.tags.all %}                       
+            <a class="sm" href="{% url 'main_article:tagRead' tag.id %}">{{ tag.name }}
+            {% if not forloop.last %}
+            ,
+            {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+        <div class="article_content">{{ article.content|safe}}</div>
+        
+    </div>
+</article>
+<!--  
+<aside class="social-icons clearfix ">
+    
+    <a href="#likes">
+    <i class="fa fa-thumbs-o-up img-rounded" >
+    {{article.likes}}
+    </i>  
+    </a>
+    
+	
+</aside>
+-->
+<div id="userlikes">
+	 {% with total_likes=article.superlikes.count users_like=article.superlikes.all %}	
+	 <a href="#" data-id="{{ article.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="superlikes {% if not request.user.is_authenticated %}no-login{% endif %} {% if request.user in users_like %}userlikes{% endif %}">	 
+	 <i class="up"><i class="fa fa-thumbs-o-up"></i></i>
+
+	 </a> 
+	{% if superlikes %}
+	 :	
+	{% for user_likes_name in superlikes %}
+	<a id="userlike" class="userlikes">{{user_likes_name.username}}</a>
+	{% if not forloop.last %}
+	,
+	{% endif %}
+	
+	
+	{% endfor %}
+	<a class="user_likes_tostring"><span class="total">{{ total_likes }}</span>人觉得很赞</a>
+	{% endif %}	
+	{% endwith %}
+	
+</div>
+<div>
+上一篇：<a class="prenext" href="{{previous_article.get_absolute_url}}">{{previous_article}}</a>
+<br>
+下一篇：<a class="prenext" href="{{next_article.get_absolute_url}}">{{next_article}}</a>
+</div>
+<br>
+
+<i>
+{% if article.pubDateTime|date:'Y-m-d H:i' == article.upDateTime|date:'Y-m-d H:i' %}
+{% else %}
+更新于:{{article.upDateTime|date:'Y-m-d H:i' }}
+{% endif %}
+</i>
+<hr>
+{% include 'easy_comment/comment_form.html' with post=article %}
+{% include 'easy_comment/comment_list.html' with post=article %}
+<script type="text/javascript">
+//给正文中的图片添加缩放属性
+$(".article_content img").attr("data-action", "zoom");
+</script>
+<script src="{% static 'ckeditor/ckeditor/config.js' %}"></script>
+<script type="text/javascript" src="{% static 'main_article/js/zoom.min.js' %}"></script>
+<script>
+//移除默认风格属性，填充满整个container
+    $(".django-ckeditor-widget").removeAttr('style');
+</script>
+
+{% endblock %}
+
+{% block domready %}
+    $('a.superlikes').click(function(e){
+	    if ($(this).hasClass('no-login')){
+	                alert('请在登陆后执行该操作');
+	                return false;
+	            }
+    	var y = $(this).data('id');
+        var action_superlikes = $(this).data('action');
+        
+        e.preventDefault();
+        $.post('{% url 'main_article:superlikes' %}',
+            {
+                id: y,
+                action: action_superlikes
+            },
+            function(data){
+                if (data['status'] == 'ok')
+                {
+                    var previous_action = $('a.superlikes').data('action');
+					
+                    // toggle data-action
+                    $('a.superlikes').data('action', previous_action == 'like' ? 'unlike' : 'like');
+                    // add class              
+                    $('a.superlikes').find("i.up").addClass('userlikes');
+
+                    //
+                   	if (previous_action == 'unlike'){                  	
+                    $('a.superlikes').find("i.up").removeClass('userlikes');                                     
+                }
+                	
+                    // update total likes
+                    var previous_likes = parseInt($('a.user_likes_tostring span.total').text());
+                    $('a.user_likes_tostring span.total').text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+                }
+        });
+
+    });
+{% endblock %}
+
+

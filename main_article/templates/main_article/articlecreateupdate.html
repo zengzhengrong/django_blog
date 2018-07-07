@@ -1,0 +1,32 @@
+{% extends 'main_article/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+{% if article %}
+    <form method="post" action="{% url 'main_article:articleUpdate' article.id %}">
+{% endif %}
+    <form method="post" action="{% url 'main_article:articleCreate' %}">
+      
+      {% csrf_token %}
+                 参考标签：
+      {% for tag in tags %}
+      <a>{{tag}}
+      {% if not forloop.last %}
+      ,
+      {% endif %}
+      </a>
+      {% endfor %}
+      {{ articleForm.media}}
+      {{ articleForm|crispy }}
+           
+      <input class="btn btn-primary" type="submit" value="发表" onclick="{% if article %}return update() {% else %}return post() {% endif %}">
+      <a class="btn btn-danger" href="{% url 'main_article:article' %}">放弃</a>
+    </form>
+{% endblock %}
+{% block extra_js %}
+<script type="text/jscript">
+document.body.onbeforeunload = function()
+{
+window.event.returnValue = '您即将离开本页面,确定继续吗?';
+}
+</script>
+{% endblock extra_js %}

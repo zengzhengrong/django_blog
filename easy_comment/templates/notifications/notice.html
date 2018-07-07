@@ -1,0 +1,34 @@
+<div class="alert alert-block alert-{{ notice.level }}">
+  <h4>
+    <b>
+    {% if notice.actor.profile.nickname %}
+    <a href="{% url 'main_article:userRead' notice.actor.id %}">{{ notice.actor.profile.nickname }}</a>
+    {% else %}
+    {{notice.actor}}
+    {% endif %}
+    </b>
+    {% if notice.target %}
+        在&nbsp;<a class="notice-target" href="{{notice.target.get_absolute_url}}#c{{ notice.action_object.id }}">{{ notice.target }}</a> 中&nbsp;
+    {% endif %}
+    {% if notice.verb == '和你创建聊天' %}
+  	<a class="notice-target" href="{% url 'dialogs_detail' notice.actor %}">{{ notice.verb }}</a>
+  	{% elif notice.verb == '私信了你' %}
+  	<a class="notice-target" href="{% url 'dialogs_detail' notice.actor %}">{{ notice.verb }}</a>  
+    {% elif notice.verb == '关注了你' %}
+    <a class="notice-target" href="{% url 'main_article:user_followers' %}">{{ notice.verb }}</a>
+  	{% else %}	
+    {{ notice.verb }}
+    {% endif %}
+  </h4>
+  
+  <p>{{ notice.timesince }} 前</p>
+
+  <p>{{ notice.description|safe|linebreaksbr }}</p>
+  <div class="row notice-action">
+    <a class="btn btn-danger pull-right" href="{% url 'notifications:delete' notice.slug %}">删除</a>
+  {% if notice.unread %}
+    <a class="btn btn-primary pull-right" href="{% url 'notifications:mark_as_read' notice.slug %}">标记为已读</a>
+    
+  {% endif %}
+  </div>
+</div>

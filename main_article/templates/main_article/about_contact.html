@@ -1,0 +1,42 @@
+{% load staticfiles %}
+<div class="widewrapper footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 footer-widget">
+                <h3> <i class="fa fa-user"></i>About</h3>
+
+               <p> 博客由Django和Bootstarp制作</p>
+               <p>本博客仅代表个人观点，若文章引用部分有侵权行为，请联系站长删除</p>
+            </div>
+
+            <div class="col-md-4 footer-widget">
+                <div class="actGotop">
+                    <a href="javascript:;" title="返回顶部">
+                <h3> 
+                    <i class="fa fa-level-up"></i> 回到顶部
+                </h3>
+                    </a>
+                </div>    
+                <a href="{% url 'main_article:Rss' %}">
+                <h3><i class="fa fa-rss">RSS订阅</i></h3>
+                </a>
+                
+                          
+            </div>
+
+            <div class="col-md-4 footer-widget">
+                <h3> <i class="fa fa-envelope"></i>Contact Me</h3>
+
+                <h4>建议和反馈可联系</h4>
+                <p>Email:1.bhg889@163.com</p>
+                <p>&nbsp &nbsp &nbsp &nbsp &nbsp 
+                 2.bhg889@gmail.com</p>
+                <p>QQ:506862754</p>
+                 <div class="footer-widget-icon">
+                    <i class="fa fa-qq"></i><i class="fa fa-wechat"></i><i class="fa fa-google"></i>
+                </div>
+            </div>
+           
+        </div>
+    </div>
+</div>

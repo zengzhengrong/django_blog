@@ -1,0 +1,16 @@
+<div class="aside-widget img-rounded">
+    <header>
+        <h3>相关阅读</h3>
+    </header>
+    <div class="body">
+        <ul class="clean-list ">
+        
+        {% for similar_article in similar_articles %}
+            <li><a href="{% url 'main_article:articleRead' similar_article.id %}">{{similar_article.title}}</a></li>
+        {% empty %}
+                       暂无文章
+        {% endfor %}
+        
+        </ul>
+    </div>
+</div>

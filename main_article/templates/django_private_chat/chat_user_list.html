@@ -1,0 +1,21 @@
+<div class="col-md-3">
+      <div class="user-list-div">
+          <ul>
+              {% for dialog in object_list %}
+                  <li>
+                      {% if dialog.owner == request.user %}
+                          {% with dialog.opponent.username as username %}
+                              <a href="{% url 'dialogs_detail' username %}" id="user-{{ username }}"
+                                 class="btn btn-danger">{% trans "Chat with" %} {{ username }}</a>
+                          {% endwith %}
+                      {% else %}
+                          {% with dialog.owner.username as username %}
+                              <a href="{% url 'dialogs_detail' username %}" id="user-{{ username }}"
+                                 class="btn btn-danger">{% trans "Chat with" %} {{ username }}</a>
+                          {% endwith %}
+                      {% endif %}
+                  </li>
+              {% endfor %}
+          </ul>
+      </div>
+</div>

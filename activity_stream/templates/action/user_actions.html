@@ -1,0 +1,39 @@
+{% load staticfiles %} 
+{% block css %}
+<link rel="stylesheet" href="{% static 'action/css/style.css' %}">
+{% endblock %}
+<div class="containter">				
+	<div>
+		<div class="about4_ch">用户动态</div>
+		<div class="about4_main">	
+			<ul class="action-ul">
+			{% for action in myactions %}
+			{% with user=action.user profile=action.user.profile %}
+				<li>
+				<a class="action_user">
+				{% if user == request.user%}
+				我
+				{% elif profile.nickname %}
+				{{profile.nickname}}
+				{% else %}
+				{{user}}
+				{% endif %}
+				</a>
+				&nbsp&nbsp&nbsp{{action.verb}}&nbsp&nbsp&nbsp
+				{% if action.action %}
+				{% with target=action.action %}
+				<a class="action_action" href="{{target.get_absolute_url}}{% if action.get_ct_name == 'comment' %}#c{{action.ct_id}}{% endif %}">
+				{{target}}</a>
+				{% endwith %}
+				{% endif %}
+				<span class="text-muted small pull-right">{{action.created|timesince}}前</span>	
+				</li>		
+				
+			{% endwith %}
+			{% empty %}
+			没有任何动态
+			{% endfor %}
+			</ul>
+		</div>
+	</div>	
+</div>

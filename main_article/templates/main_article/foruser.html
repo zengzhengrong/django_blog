@@ -1,0 +1,6 @@
+ <!-- UserList.html-->
+ <div class="user">
+    <a class="avatar" href="{% url 'main_article:userRead' user.id %}"><img class="img-rounded" src="{{ user.avatar.url }}"></a>             
+    <a href="{% url 'main_article:userRead' user.id %}" class="usernameclick">{% if user.nickname %}{{user.nickname}}{% else %}{{user.user}}{% endif %}</a>
+ </div>
+  <hr>
