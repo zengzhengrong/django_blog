@@ -20,7 +20,7 @@
                 </div>
                 <div class="col-md-11 comment-right">
                     <span class="comment-user"><strong>
-                        <a href="{% url 'main_article:userRead' node.user.id %}">
+                        <a href="{% url 'main_article:userRead' node.user.profile.id %}">
                         {% if node.user_name %}
                         {{node.user_name}}
                         {% else %}
