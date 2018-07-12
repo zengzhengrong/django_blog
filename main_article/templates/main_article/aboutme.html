@@ -5,8 +5,8 @@
     <div class="master_body"> 
     <div class="master_panel">
         
-        <a href="{% url 'main_article:userRead' master.id %}"data-toggle="tooltip" data-placement="top" title="拒做犬儒！！">
-            <img class="round_icon center-block" src="{{master.avatar.url}}">
+        <a href="{% url 'main_article:userRead' master.profile.id %}"data-toggle="tooltip" data-placement="top" title="拒做犬儒！！">
+            <img class="round_icon center-block" src="{{master.profile.avatar.url}}">
         </a>
         <span style="margin-top:-110px "class="btn btn-default ">95后</span>
         <span style="margin-top:-100px "class="btn btn-default pull-left">GeekMan</span>

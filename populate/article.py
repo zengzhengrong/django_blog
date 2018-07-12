@@ -2,11 +2,14 @@ from populate import base
 from main_article.models import Article,Category
 from easy_comment.models import Comment
 from django.contrib.auth.models import User
+
 import random
 
 
 def populate():
-    # Article.objects.all().delete()
+    
+    print('article..delete')
+    Article.objects.all().delete()
     print('populating....',end='')
     titles = [
     'C++',
@@ -42,7 +45,7 @@ def populate():
     articles  = Article.objects.filter(category=category)
     articles.delete()
     print('delete...done')
-    user = User.objects.get(username='zzr')
+    user = User.objects.get(username='admin')
     for title in titles:
         article = Article()
         article.title = title

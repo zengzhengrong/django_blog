@@ -1,17 +1,17 @@
 <ul class="list-group list-group-flush">
     {% for comment in user_comments %}
 	<li class="list-group-item">
-      <div class="row no-gutters w-100">
+      <div class="row no-gutters">
           <div>		           	
           <div class="pull-left ">
           {% if comment.user.profile.nickname %}
            {% if comment.user.username == request.user.username %}
-         	<b>我</b>
+         	<b>&nbsp我</b>
            {% else %}
-           <b>{{comment.user.profile.nickname}}</b>
+           <b>&nbsp{{comment.user.profile.nickname}}</b>
            {% endif %}
           {% else %}
-          	   <b>{{comment.user.username}}</b>
+          	   <b>&nbsp{{comment.user.username}}</b>
           {% endif %}
           
           {% if comment.parent %}
@@ -28,7 +28,7 @@
           {% endif %}
           
           </a>&nbsp在&nbsp&nbsp<a class="user-readpost-target" href="{% url 'main_article:articleRead' comment.post.id %}#c{{comment.id}}">{{comment.post}}</a>:</div>
-          <span class="text-muted small pull-right">{{comment.submit_date|timesince}}前</span>
+          <span class="text-muted small pull-right">{{comment.submit_date|timesince}}前&nbsp</span>
           </div>
           
       </div>

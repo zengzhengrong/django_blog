@@ -1,4 +1,6 @@
 *~
 __pycache__
-migrations
 *.pyc
+.settings
+.project
+.pydevproject

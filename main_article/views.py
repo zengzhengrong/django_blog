@@ -117,7 +117,11 @@ def article(request):
 
     # 上述为文章分页功能
     # 获取站长信息
-    master = get_object_or_404(Userprofile,id=1)
+    '''
+    superuser = User.objects.get(username='admin')
+    master = get_object_or_404(Userprofile,user=superuser)
+    '''
+    master = User.objects.get(username='admin')
     context = {'articles':articles,
                'current_page_round':current_page_round,
                'articlecount':articlecount,
