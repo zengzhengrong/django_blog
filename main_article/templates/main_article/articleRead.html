@@ -1,6 +1,10 @@
 {% extends 'main_article/base.html' %}
 {% load staticfiles %}
 
+{% block page_title %}
+{{ page_title }}
+{% endblock %}
+
 {% block css %}
 
 <link rel="stylesheet" href="{% static 'easy_comment/css/comment.css' %}">

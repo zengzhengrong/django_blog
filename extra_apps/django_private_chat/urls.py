@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import url
+from django.urls import re_path
 
 from extra_apps.django_private_chat import views
 
 urlpatterns = [
-    url(
-        regex=r'^dialogs/(?P<username>[\w.@+-]+)$',
+    re_path(
+        r'^dialogs/(?P<username>[\w.@+-]+)$',
         view=views.DialogListView.as_view(),
         name='dialogs_detail'
     ),
-    url(
-        regex=r'^dialogs/$',
+    re_path(
+        r'^dialogs/$',
         view=views.DialogListView.as_view(),
         name='dialogs'
     ),

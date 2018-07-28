@@ -3,15 +3,17 @@
 <html lang="zh-cn">
 <head>
     <meta charset="utf-8">
-    <title>zengzhengrongblog</title>
+    
+    <title>{% block page_title %}{% endblock %}</title>
+    
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <link rel="icon" href="{% static 'main_article/img/timg2.jpg'%}" type="image/x-icon">
-    <link rel="stylesheet" href="{% static 'main_article/css/bootstrap.min.css' %}"}>
+    
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'main_article/css/font-awesome/css/font-awesome.min.css' %}">
 
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600|PT+Serif:400,400italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.lug.ustc.edu.cn/css?family=Open+Sans:400,600|PT+Serif:400,400italic' rel='stylesheet' type='text/css'>
 
     <link rel="stylesheet" href="{% static 'main_article/css/style.css' %}" id="theme-styles">
     <!--ckeditor-->
@@ -43,9 +45,6 @@
                     {% endblock %}
                     {% endblock %}
                 </div>
-                <aside class="col-md-4 blog-aside">
-                                       
-                </aside>
             </div>
         </div>
     </div>
@@ -58,6 +57,7 @@
     <script src="{% static 'main_article/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'main_article/js/modernizr.js' %}"></script>
     <script src="{% static 'ckeditor/ckeditor/plugins/prism/lib/prism/prism_patched.min.js' %}"></script>
-
+    {% block script %}
+    {% endblock %}
 </body>
 </html>

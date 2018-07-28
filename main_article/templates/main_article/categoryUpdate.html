@@ -1,4 +1,9 @@
 {% extends 'main_article/base.html' %}
+
+{% block page_title %}
+{{ page_title }}
+{% endblock %}
+
 {% block content %}
 <p>已选择：<b>{{ category }}</b>
  <form class="inlineBlock" method="post" action="{% url 'guestbook:g_categoryUpdate' category.id %}">

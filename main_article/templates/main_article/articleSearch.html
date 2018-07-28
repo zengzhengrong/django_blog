@@ -1,4 +1,8 @@
 {% extends 'main_article/base.html' %}
+{% block page_title %}
+{{ page_title }}
+{% endblock %}
+
 {% block content %}
 {% if not articles %}
   <p>无搜索结果</p>      

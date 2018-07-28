@@ -765,7 +765,7 @@ Blog main page paging
 
 .paging {
   margin-bottom: 20px;
-  text-align: right;
+  text-align: center;
 }
 
 .paging a:hover,
@@ -1407,8 +1407,7 @@ color:#000000;
 margin-bottom:50px;	
 }
 .errorlist{
-color:red;
-font-weight:bold;	
+list-style-type:none;
 }
 .prenext{
 color:#808080; 

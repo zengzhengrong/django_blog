@@ -203,13 +203,13 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': 'D:/workspace/webappps/blog/zzrblog.log',
+            'filename': 'E:/workspace/webappps/blog/zzrblog.log',
             'formatter': 'verbose'
         },
         'file_to_sendemail': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': 'D:/workspace/webappps/blog/zzrblog_sendemail.log',
+            'filename': 'E:/workspace/webappps/blog/zzrblog_sendemail.log',
             'formatter': 'verbose'
         }
     },
@@ -410,10 +410,14 @@ ACCOUNT_ADAPTER = 'main_article.forms.Myadapter'
 
 #当用户不在线时候发送邮件
 SEND_NOTIFICATION_EMAIL = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 25
 EMAIL_HOST_USER = 'bhg889@163.com'
 EMAIL_HOST_PASSWORD = 'aa556689'
-EMAIL_PORT = 25
+EMAIL_SUBJECT_PREFIX = '[zzr的博客]'
+EMAIL_USE_TLS = True
+
 ####
 DEFAULT_FROM_EMAIL = 'bhg889 <bhg889@163.com>'
 #登录跳转

@@ -56,11 +56,7 @@
                                     <a  class="glyphicon glyphicon-arrow-down dropdown-toggle" data-toggle="dropdown" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">                             
                                         
                                         <span class="user_name">  
-                                        {% if user.profile.nickname %}  
-                                        {{user.profile.nickname}}
-                                        {% else %}
-                                        {{user.username}}
-                                        {% endif %}
+                                        {{ user.profile.get_nickname_or_username }}
                                         </span>
                                      
                                     </a>

@@ -4,7 +4,7 @@ from extra_apps.ckeditor_uploader.fields import RichTextUploadingField
 from django.utils.html import strip_tags
 from taggit.managers import TaggableManager
 from time import timezone
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 
 class Guestbook_Category(models.Model):
@@ -18,14 +18,14 @@ class Guestbook_Category(models.Model):
         verbose_name_plural=verbose_name
 
 class Guestbook_Post(models.Model):
-    category = models.ForeignKey(Guestbook_Category,verbose_name='分类')
+    category = models.ForeignKey(Guestbook_Category,verbose_name='分类',on_delete=models.SET_NULL,null=True)
     tags = TaggableManager(help_text='(选填)用英文输入法逗号来分割标签',blank=True)
     title = models.CharField(max_length=128, unique=True,verbose_name='标题')
     content = RichTextUploadingField(verbose_name='正文',config_name='guestbook')
     pubDateTime = models.DateTimeField(auto_now_add=True,verbose_name='发表时间')
     upDateTime = models.DateTimeField(auto_now_add=True,verbose_name='修改时间')
     read_num = models.IntegerField(default=0,verbose_name='阅读次数')
-    author = models.ForeignKey(User,verbose_name='作者')
+    author = models.ForeignKey(User,verbose_name='作者',on_delete=models.SET_NULL,null=True)
     comment_num = models.IntegerField(default=0,verbose_name='评论数') 
     class Meta:
         ordering = ['-pubDateTime']

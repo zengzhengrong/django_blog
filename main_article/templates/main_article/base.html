@@ -3,7 +3,7 @@
 <html lang="zh-cn">
 <head>
     <meta charset="utf-8">
-    <title>zzrblog</title>
+    <title>{% block page_title %}{% endblock %}</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <link rel="icon" href="{% static 'main_article/img/timg2.jpg'%}" type="image/x-icon">
@@ -13,7 +13,7 @@
    
     <link rel="stylesheet" href="{% static 'main_article/css/font-awesome/css/font-awesome.min.css' %}">
     
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600|PT+Serif:400,400italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.lug.ustc.edu.cn/css?family=Open+Sans:400,600|PT+Serif:400,400italic' rel='stylesheet' type='text/css'>
 
     <link rel="stylesheet" href="{% static 'main_article/css/style.css' %}" id="theme-styles">
     <!--ckeditor-->

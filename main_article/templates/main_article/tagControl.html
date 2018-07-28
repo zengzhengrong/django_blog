@@ -1,4 +1,9 @@
 {% extends 'main_article/base.html' %}
+
+{% block page_title %}
+{{ page_title }}
+{% endblock %}
+
 {% block content %}
     <form method="post" action="{% url 'main_article:tagControl' %}">
       {% csrf_token %}

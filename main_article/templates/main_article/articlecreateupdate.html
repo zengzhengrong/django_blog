@@ -1,5 +1,10 @@
 {% extends 'main_article/base.html' %}
 {% load crispy_forms_tags %}
+
+{% block page_title %}
+{{ page_title }}
+{% endblock %}
+
 {% block content %}
 {% if article %}
     <form method="post" action="{% url 'main_article:articleUpdate' article.id %}">
@@ -15,9 +20,10 @@
       {% endif %}
       </a>
       {% endfor %}
-      {{ articleForm.media}}
+      {{ articleForm.media }}
+      
       {{ articleForm|crispy }}
-           
+      
       <input class="btn btn-primary" type="submit" value="发表" onclick="{% if article %}return update() {% else %}return post() {% endif %}">
       <a class="btn btn-danger" href="{% url 'main_article:article' %}">放弃</a>
     </form>

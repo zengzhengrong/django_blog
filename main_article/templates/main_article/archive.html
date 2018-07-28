@@ -1,4 +1,9 @@
 {% extends 'main_article/base.html' %}
+
+{% block page_title %}
+{{ page_title }}
+{% endblock %}
+
 {% block content %}
 
 {% regroup articles_archive by pubDateTime.year as year_post_group %}

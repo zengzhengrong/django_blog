@@ -13,10 +13,10 @@ import re
 
 
 class ArticleForm(forms.ModelForm):
-    title = forms.CharField(label='标题',max_length=128)   
+    title = forms.CharField(label='标题',max_length=128,widget=forms.TextInput(attrs={'class':'form-control','placeholder':'必填'}))   
     content = forms.CharField(label='正文',widget = CKEditorUploadingWidget())
     category = forms.ModelChoiceField(label='分类',queryset=Category.objects.all()) 
-    #tags = forms.ModelMultipleChoiceField(label='标签(选填)',queryset=Tag.objects.all(),widget=forms.CheckboxSelectMultiple(attrs={'class': 'nav nav-tabs navbar-default img-rounded'}),required=False)
+    #tags = forms.CharField(label='标签(选填)',widget=forms.TextInput(attrs={'class':'form-control','placeholder':'用空格或者英文逗号分割标签'}))
 
     class Meta:
         model = Article
@@ -83,3 +83,91 @@ class Myadapter(DefaultAccountAdapter):
             raise forms.ValidationError(('密码不能全为数字'),code = 'invalid')
         
         return DefaultAccountAdapter.clean_password(self, password, user=user)
+
+class ChangePasswordForm(forms.Form):
+    original_password = forms.CharField(label='原密码',
+                                        widget=forms.TextInput(attrs={'class':'form-control','placeholder':'输入原密码','type':'password'}))
+    new_password = forms.CharField(label='新密码',
+                                        max_length=10,
+                                        widget=forms.TextInput(attrs={'class':'form-control','placeholder':'输入新密码(6-10个字符)','type':'password'}))
+    new_password_again = forms.CharField(label='再次输入新密码',
+                                         max_length=10,
+                                         widget=forms.TextInput(attrs={'class':'form-control','placeholder':'输入新密码(6-10个字符)','type':'password'}))
+    ##在forms添加request,判断用户是否在线
+    def __init__(self,*args,**kwargs):
+        # 重新初始化
+        if 'user' in kwargs:
+            self.user = kwargs.pop('user')
+        super(ChangePasswordForm,self).__init__(*args,**kwargs)
+    def clean(self):
+        original_password = self.cleaned_data.get('original_password','').strip()
+        new_password = self.cleaned_data.get('new_password','')   
+        new_password_again = self.cleaned_data.get('new_password','')
+        # 检测原密码有效性
+        if not self.user.check_password(original_password):
+            raise forms.ValidationError(('原密码不正确'),code='invalid')
+        # 原密码和新密码不能一样
+        if original_password == new_password:
+            raise forms.ValidationError(('原密码和新密码不能一样'),code='invalid')
+        # 检测新密码一致性
+        if new_password != new_password_again:
+            raise forms.ValidationError(('两次输入新密码不一致'),code='invalid')
+        # 密码不为空
+        if new_password =='':
+            raise forms.ValidationError(('新密码不能为空'),code='invalid')
+        # 检验密码长度
+        if len(new_password) < 6:
+            raise forms.ValidationError(('密码太短（6-10字符）'),code='invalid')
+        return self.cleaned_data
+
+class ChangeEmailForm(forms.Form):
+    original_email = forms.EmailField(label='原邮箱',
+                             widget=forms.EmailInput(attrs={'class':'form-control','placeholder':'输入原邮箱地址'}))
+    email = forms.EmailField(label='新邮箱',
+                             widget=forms.EmailInput(attrs={'class':'form-control','placeholder':'输入新邮箱地址'}))
+    verification_code = forms.CharField(label='验证码',
+                                        required=False,
+                                        widget=forms.TextInput(attrs={'class':'form-control','placeholder':'输入验证码'}))
+    
+    ##在forms添加request,判断用户是否在线
+    def __init__(self,*args,**kwargs):
+        # 重新初始化
+        if 'request' in kwargs:
+            self.request = kwargs.pop('request')
+        super(ChangeEmailForm,self).__init__(*args,**kwargs)
+    
+        
+    def clean_verification_code(self):
+        verification_code = self.cleaned_data.get('verification_code','').strip()
+        if verification_code == '':
+            raise forms.ValidationError(('验证码不能为空'),code='null')
+            
+        if not verification_code.isdigit():
+            raise forms.ValidationError(('格式不对'),code='invalid')
+            
+        return verification_code
+    def clean(self):
+        # 判断用户是否登陆
+        if self.request.user.is_authenticated:
+            self.cleaned_data['user'] = self.request.user
+        else:
+            raise forms.ValidationError(('用户没有登陆'),code='invalid_user')
+        # 验证邮箱有效性
+        email = self.cleaned_data.get('email').strip()
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError('你要绑定的邮箱已经被绑定')
+        
+        # 判断验证码
+        code = self.request.session.get('%s_change_email' % self.request.user.username)
+        verification_code = self.cleaned_data.get('verification_code','').strip()
+        # print(code)
+        # print(verification_code)
+        if (code=='' or code != verification_code):
+            raise forms.ValidationError(('验证码不正确'),code='invalid_verification_code')
+        
+        return email
+    
+    
+    
+    
+            

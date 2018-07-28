@@ -6,7 +6,7 @@ from imagekit.processors import ResizeToFill
 from imagekit.models import ProcessedImageField
 from django.utils.html import strip_tags
 from taggit.managers import TaggableManager
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils import timezone
 import urllib.parse
 import codecs
@@ -20,7 +20,7 @@ import sys
 
 
 class Userprofile(models.Model):
-    user = models.OneToOneField(User, related_name='profile')
+    user = models.OneToOneField(User, related_name='profile',on_delete=models.CASCADE)
     nickname = models.CharField(max_length=30, blank=True, null=True, verbose_name='昵称')
     qq = models.CharField(max_length=20, blank=True, null=True, verbose_name='QQ号码')
     weibourl = models.URLField(max_length=100, blank=True, null=True, verbose_name='个人微博地址')
@@ -53,8 +53,19 @@ class Userprofile(models.Model):
             self.avatar.name = urllib.parse.quote(self.avatar.name)[:10]
             # print(self.avatar.name)
         super(Userprofile, self).save()
+
+    def get_nickname_or_username(self): # 获取nickname或者username
+        if Userprofile.objects.filter(user=self.user).exists():
+            profile = Userprofile.objects.get(user=self.user)
+            if self.nickname == '' or self.nickname == None:
+                return self.user.username
+            else:
+                return self.nickname
+        else:
+            return self.user.username
+        
 class First_login(models.Model):
-    user = models.OneToOneField(User, related_name='user_first_login')
+    user = models.OneToOneField(User, related_name='user_first_login',on_delete=models.CASCADE)
     first_login = models.BooleanField(default=True,verbose_name=u'第一次登陆')
     
     class Meta:
@@ -65,8 +76,8 @@ class First_login(models.Model):
     
         
 class Contact(models.Model):
-    from_user = models.ForeignKey(Userprofile,related_name='user_from',verbose_name='用户')
-    to_user = models.ForeignKey(Userprofile,related_name='user_to',verbose_name='关注')
+    from_user = models.ForeignKey(Userprofile,related_name='user_from',verbose_name='用户',on_delete=models.CASCADE)
+    to_user = models.ForeignKey(Userprofile,related_name='user_to',verbose_name='关注',on_delete=models.CASCADE)
     created_time = models.DateTimeField(auto_now_add=True,db_index=True)
     class Meta:
         ordering = ['-created_time']
@@ -88,7 +99,7 @@ class Category(models.Model):
         return self.name
 
 class Daily_click(models.Model):
-    user = models.ForeignKey(Userprofile,related_name='user_click',verbose_name='签到用户',unique=False)
+    user = models.ForeignKey(Userprofile,related_name='user_click',verbose_name='签到用户',unique=False,on_delete=models.CASCADE)
     click_status = models.NullBooleanField(verbose_name='签到状态')
     created_time = models.DateTimeField(default=timezone.now,verbose_name='签到时间')    
     class Meta:
@@ -99,7 +110,7 @@ class Daily_click(models.Model):
         return self.user.user.username
 
 class Article(models.Model):
-    category = models.ForeignKey(Category,verbose_name='分类')
+    category = models.ForeignKey(Category,verbose_name='分类',on_delete=models.SET_NULL,null=True)
     tags = TaggableManager(help_text='(选填)用英文输入法逗号来添加标签',blank=True,verbose_name='标签集')
     title = models.CharField(max_length=128, unique=True,verbose_name='标题')
     content = RichTextUploadingField(verbose_name='正文')
@@ -108,7 +119,7 @@ class Article(models.Model):
     pubDateTime = models.DateTimeField(auto_now_add=True,verbose_name='发表时间')
     upDateTime = models.DateTimeField(auto_now_add=True,verbose_name='修改时间')
     read_num = models.IntegerField(default=0,verbose_name='阅读次数')
-    author = models.ForeignKey(User,verbose_name='作者',related_name='user_articles')
+    author = models.ForeignKey(User,verbose_name='作者',related_name='user_articles',on_delete=models.SET_NULL,null=True)
     comment_num = models.IntegerField(default=0,verbose_name='评论数') 
     excerpt = models.CharField(max_length=200, blank=True,verbose_name='摘录') 
     superlikes = models.ManyToManyField(User,blank=True,verbose_name='超级赞',related_name='user_likes')

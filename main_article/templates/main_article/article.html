@@ -17,7 +17,7 @@
               <div class="body">
                <i class="fa fa-print"></i><a href="{% url 'main_article:categoryRead' article.category.id %}">{{article.category}}</a>  
                <i class="fa fa-calendar"></i>{{ article.pubDateTime|date:'Y-m-d' }}
-               <i class="fa fa-user" ></i><a href="{% url 'main_article:userRead' article.author.id %}" class="usernameclick">
+               <i class="fa fa-user" ></i><a href="{% url 'main_article:userRead' article.author.profile.id %}" class="usernameclick">
                {% if article.author.profile.nickname %}  
                {{article.author.profile.nickname}}
                {% else %}

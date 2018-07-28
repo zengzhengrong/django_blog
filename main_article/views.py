@@ -5,12 +5,12 @@ from django.contrib import messages
 from main_article.models import Article,Category,Userprofile,Contact,Daily_click,First_login
 from easy_comment.models import Comment
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
-from main_article.forms import ArticleForm,UserprofileForm
+from main_article.forms import ArticleForm,UserprofileForm,ChangeEmailForm,ChangePasswordForm
 from django.db.models.query_utils import Q
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.syndication.views import Feed
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from taggit.models import Tag
 from django.utils import timezone
 from django.http import JsonResponse
@@ -24,7 +24,12 @@ from guestbook.models import Guestbook_Category
 from multiprocessing.sharedctypes import template
 from django.views.decorators.cache import cache_page
 from .utils import save_avatar_img
+from django.core.mail import send_mail
+from django.contrib import auth
 import logging
+import random
+import string
+import time
 logger = logging.getLogger('main_article')
 
 
@@ -120,12 +125,16 @@ def article(request):
     '''
     superuser = User.objects.get(username='admin')
     master = get_object_or_404(Userprofile,user=superuser)
+    
     '''
     master = User.objects.get(username='admin')
+    Userprofile.objects.get_or_create(user=master)
     context = {'articles':articles,
                'current_page_round':current_page_round,
                'articlecount':articlecount,
-               'master':master
+               'master':master,
+               'page_title':'首页'
+               
                }
     
     '''
@@ -161,7 +170,7 @@ def article(request):
 def articleCreate(request):
     template = 'main_article/articlecreateupdate.html'
     if request.method == 'GET':       
-        return render(request, template,{'articleForm':ArticleForm(),'tags':Tag.objects.all()})
+        return render(request, template,{'articleForm':ArticleForm(),'tags':Tag.objects.all(),'page_title':'新增博客'})
 
     # POST
     articleForm = ArticleForm(request.POST)
@@ -220,7 +229,7 @@ def articleRead(request,articleId):
     'comment_num':Comment.objects.filter(post=articleToRead).__len__(),
     'similar_articles':similar_article[:5],
     'superlikes':articleToRead.superlikes.all()[:5],
-    
+    'page_title':'{}的博客'.format(articleToRead.title)
     }
     
     '''
@@ -256,8 +265,6 @@ def articleRead(request,articleId):
     response.set_cookie('blog_%s_read_num' % articleId, 'have_read',max_age=120)
     return response
     
-    
-
 @login_required
 def articleUpdate(request, articleId):
     articleToUpdate = get_object_or_404( Article, id=articleId)
@@ -270,7 +277,7 @@ def articleUpdate(request, articleId):
             return redirect('main_article:article')
 
         articleForm = ArticleForm(instance=articleToUpdate)
-        return render(request, template, {'articleForm':articleForm, 'article':articleToUpdate,'tags':Tag.objects.all()})
+        return render(request, template, {'articleForm':articleForm, 'article':articleToUpdate,'tags':Tag.objects.all(),'page_title':'修改博客'})
     # POST
     articleForm = ArticleForm(request.POST, instance=articleToUpdate)
 
@@ -305,7 +312,9 @@ def articleSearch(request):
                                       Q(content__icontains=searchTerm))
     context = {'articles':articles,
                'searchTerm' : searchTerm,
-               'article_num':articles.__len__()}
+               'article_num':articles.__len__(),
+               'page_title':'搜索结果'
+               }
     return render(request, 'main_article/articleSearch.html', context)
 def articleLike(request,articleId):
     template = 'main_article/articleRead.html'
@@ -323,12 +332,17 @@ def articleLike(request,articleId):
                 }
     return render(request, template, context)
 @login_required
+@admin_required
 def categoryControl(request):
     template = 'main_article/categoryControl.html'
     category = Category.objects.all()
     guestbook_category = Guestbook_Category.objects.all()
     if request.method =='GET':       
-        context = {'categorys':category,'guestbook_categorys':guestbook_category,'articlecount':category.__len__()}
+        context = {'categorys':category,
+                   'guestbook_categorys':guestbook_category,
+                   'articlecount':category.__len__(),
+                   'page_title':'分类控制'
+                   }
         return render(request, template,context)
     # POST
     content = request.POST.get('content')
@@ -374,7 +388,7 @@ def categoryControl(request):
 def categoryRead(request,categoryId):
     template = 'main_article/index.html'
     articles = Article.objects.filter(category=categoryId)
-    
+    category = get_object_or_404(Category, id=categoryId)
     '''
     由于计算文章留言function在article程式里，所以要调用一下，已达到在url为categoryRead页面显示评论数。
     不需要在点击article链接
@@ -404,7 +418,8 @@ def categoryRead(request,categoryId):
 
     context = {'articles':articles, 
                'current_page_round':current_page_round,           
-               'articlecount':articlecount
+               'articlecount':articlecount,
+               'page_title':'{}的分类博客'.format(category.name)
                }
     return render(request, template,context)
 @login_required
@@ -422,7 +437,7 @@ def categoryUpdate(request,categoryId):
     template = 'main_article/categoryUpdate.html'
     category = get_object_or_404(Category,id=categoryId)
     if request.method == 'GET':
-        return render(request, template,{'category':category})
+        return render(request, template,{'category':category,'page_title':'更新分类'})
     # POST
     content = request.POST.get('content')
     category.name = content
@@ -434,6 +449,7 @@ def categoryUpdate(request,categoryId):
 def tagRead(request,tagId):
     template = 'main_article/index.html'
     articles = Article.objects.filter(tags=tagId)
+    tag = get_object_or_404(Tag,id=tagId)
     '''
     由于计算文章留言function在article程式里，所以要调用一下，已达到在url为categoryRead页面显示评论数。
     不需要在点击article链接
@@ -449,18 +465,21 @@ def tagRead(request,tagId):
         articles = paginator.page(paginator.num_pages)
         
     context = {'articles':articles,
-               'articlecount':articlecount
+               'articlecount':articlecount,
+               'page_title':'{}的标签博客'.format(tag.name)
 
                }
     return render(request, template,context)
-
+@login_required
+@admin_required
 def tagControl(request):
     template = 'main_article/tagControl.html'
     tags = Tag.objects.all()
     content = request.POST.get('content')
     if request.method == 'GET':
         context ={'tags':tags,
-                  'articlecount':tags.__len__()
+                  'articlecount':tags.__len__(),
+                  'page_title':'标签控制'
                     }
         return render(request, template, context)
     #post
@@ -537,7 +556,8 @@ def userProfile(request):
            'user_articles_count':user_articles_count,
            'userprofile':'userprofile',
            'myposts':myposts[0:5],
-           'myactions':actions[0:10]
+           'myactions':actions[0:10],
+           'page_title':'个人信息'
            }
         
         if request.is_ajax():
@@ -561,7 +581,7 @@ def userProfile(request):
 def user_list(request):
     template = 'main_article/UserList.html'
     users = Userprofile.objects.exclude(user=request.user)
-    context = {'session':'user_list','users':users}
+    context = {'session':'user_list','users':users,'page_title':'用户列表'}
     return render(request, template, context)
     
 
@@ -610,7 +630,9 @@ def userRead(request,userId):
                'user_articles':user_articles,
                'user_comments':user_comments,
                'user_articles_count':user_articles_count,
-               'actions':actions[0:10]}
+               'actions':actions[0:10],
+               'page_title':'{}个人信息'.format(user_to_read.nickname if user_to_read.nickname else user_to_read.user.username)
+               }
     return render(request, template,context)
 
 def userFollowing(request):
@@ -622,7 +644,7 @@ def userFollowing(request):
         print(following.to_user.user.actions.all())  
     '''  
     
-    return render(request,template,{'myFollowings':myFollowings})
+    return render(request,template,{'myFollowings':myFollowings,'page_title':'我的关注'})
     
 def userFollowers(request):
     template = 'main_article/UserList.html'
@@ -633,7 +655,8 @@ def userFollowers(request):
         print(userfan.followers.all())
     '''
     context ={'userfans':userfans,
-              'session':'fans'}
+              'session':'fans',
+              'page_title':'我的粉丝'}
     return render(request, template, context)
 
 @ajax_required
@@ -714,8 +737,98 @@ def User_Daily_Click(request):
 def archive(request):
     template = 'main_article/archive.html'
     articles_archive = Article.objects.all()
-    context = {'articles_archive':articles_archive}
+    context = {'articles_archive':articles_archive,'page_title':'日期归档'}
     return render(request,template,context)
         
+def changeemail(request):
+    redirect_to = request.GET.get('from',reverse('article'))
+    template = 'account/change_email_form.html'
+    context = {}
+    if request.method == 'GET':
+        form = ChangeEmailForm()
+    else:
+        #POST
+        form = ChangeEmailForm(request.POST,request=request)
+        # print(form.is_valid())
+        # print(form.errors)
+        if form.is_valid():
+            email = form.cleaned_data
+            request.user.email = email
+            request.user.save()
+            # 清除session
+            del request.session['%s_change_email' % request.user.username]
+            messages.success(request,'修改邮箱成功')
+            return redirect(redirect_to)
+    context['page_title'] = '更换邮箱'
+    context['panel_title'] = '更换邮箱'
+    context['form'] = form
+    context['return_back_url'] = redirect_to
+    context['submit_text'] = '提交'
+    context['style_form'] = 'info'
+    return render(request,template,context)
+
+def send_email_code(request):
+    list_code = random.sample(string.digits,4)
+    # print(list_code)
+    code = ''.join(list_code)
+    print('%s_验证码:' % request.user.username +code)
+    data = {}
+    original_email = request.GET.get('original_email','')
+    # print(original_email)
+    request.session['%s_change_email' % request.user.username] = code
+    # print(request.session['%s_change_email' % request.user.username])
+    subject = '来自[Zzr的博客] 更改邮箱的验证码'
+    # 验证原邮箱有效性
+    if request.user.email != original_email:
+        data['status'] = 'ko_original_email'
+        return JsonResponse(data)
+    # 后端限制30s内不能发送
+    now = int(time.time()) # 这是时间，只用秒来显示
+    send_email_time = request.session.get('send_email_time',0)
+    if (original_email !='' and data.get('status') != 'ko_original_email'):
+        
+        if now - send_email_time <=30:
+            data['status'] = 'time_close'
+        else:
+            request.session['send_email_time'] = now
+            print('success_send_email')
+            send_mail(
+            subject,
+            '验证码:%s' % code,
+            'bhg889@163.com',
+            [original_email],
+            fail_silently=False,
+                )
+        
+            data['status'] = 'ok'
     
+    else:
+        data['status'] = 'ko'
+    return JsonResponse(data)
+
+def changepassword(request):
+    redirect_to = 'main_article:article'
+    template = 'account/change_password_form.html'
+    context = {}
+    if request.method == 'GET':
+        form = ChangePasswordForm()
+    else:
+        #POST
+        form = ChangePasswordForm(request.POST,user=request.user)
+        if form.is_valid():
+            new_password = form.cleaned_data['new_password']
+            user = request.user
+            user.set_password(new_password)
+            user.save()
+            # 登出
+            auth.logout(request)
+            messages.info(request,'修改密码成功,请重新登陆')
+            return redirect(redirect_to)
+    context['page_title'] = '更改密码'
+    context['panel_title'] = '更改密码'
+    context['form'] = form
+    context['return_back_url'] = redirect_to
+    context['submit_text'] = '提交'
+    context['style_form'] = 'primary'
+    return render(request,template,context)
 # Create your views here.    

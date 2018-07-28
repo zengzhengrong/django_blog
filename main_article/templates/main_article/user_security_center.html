@@ -1,0 +1,12 @@
+<ul class="list-group list-group-flush img-rounded">
+   <li class="list-group-item">
+   <a  class="article_title">密码:******</a>
+   <a href="{% url 'main_article:changepassword' %}" class="btn btn-primary pull-right">更改密码</a>
+   <p>
+   </li>    
+   <li class="list-group-item">
+   <a class="article_title">邮箱:{{userRead.user.email}}</a>
+   <a href="{% url 'main_article:changeemail' %}?from={% url 'main_article:userProfile' %}" class="btn btn-primary pull-right">更换邮箱</a>
+   <p>
+   </li>
+</ul>
