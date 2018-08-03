@@ -111,7 +111,7 @@ class Daily_click(models.Model):
 
 class Article(models.Model):
     category = models.ForeignKey(Category,verbose_name='分类',on_delete=models.SET_NULL,null=True)
-    tags = TaggableManager(help_text='(选填)用英文输入法逗号来添加标签',blank=True,verbose_name='标签集')
+    tags = TaggableManager(help_text='(选填)用英文输入法逗号或空格来分隔标签',blank=True,verbose_name='标签集')
     title = models.CharField(max_length=128, unique=True,verbose_name='标题')
     content = RichTextUploadingField(verbose_name='正文')
     likes = models.IntegerField(default=0,verbose_name='赞')

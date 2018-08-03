@@ -203,13 +203,14 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': 'E:/workspace/webappps/blog/zzrblog.log',
+            'filename': 'logs/blog.log',
             'formatter': 'verbose'
         },
+
         'file_to_sendemail': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': 'E:/workspace/webappps/blog/zzrblog_sendemail.log',
+            'filename': 'logs/blog_sendemail.log',
             'formatter': 'verbose'
         }
     },

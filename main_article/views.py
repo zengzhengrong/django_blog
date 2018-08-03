@@ -51,7 +51,8 @@ def Check_Daily_Click(request):
                 create_click_oj = Daily_click(user=request.user.profile,click_status=True,created_time=timezone.now())
                 create_click_oj.save()
             return False
-    except AttributeError:
+    except AttributeError as e:
+        print (u'error：',e)
         pass
     return True
 
