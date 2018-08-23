@@ -6,7 +6,7 @@
     <title>{% block page_title %}{% endblock %}</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
-    <link rel="icon" href="{% static 'main_article/img/timg2.jpg'%}" type="image/x-icon">
+    <link rel="icon" href="{% static 'main_article/img/zr.png'%}" type="image/x-icon">
     
     
 	  <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -63,11 +63,18 @@
 		 				{% if not request.path == '/notifications/unread/' %}
                         {% if master %}
                           {% include 'main_article/aboutme.html'%}		
-                        {% endif %}			
-		                    {% include 'main_article/featuredpost.html' %}    
-		                    {% include 'main_article/relatedpost.html' %}
-                        {% include 'main_article/archivepost.html' %}
-		                    {% include 'main_article/tags.html'%}                       
+                        {% endif %}
+                        {%if not article %}			
+  		                        
+  		                    {% include 'main_article/relatedpost.html' %}
+                          {% include 'main_article/archivepost.html' %}
+  		                    {% include 'main_article/tags.html'%}
+                        {% else %}
+                          {% if article.is_subtitle_list %}   
+                          {% include 'main_article/title_list.html' %}
+                          {% endif %}
+                        {% endif %}
+                                           
 	                    {% endif %}
                     {% endif %}
 
@@ -76,6 +83,7 @@
             </div>
         </div>
     </div>
+    <div class="clear"></div>
     
     <footer>
        {% include 'main_article/about_contact.html'%} 
@@ -85,6 +93,7 @@
     <script type="text/javascript" src="{% static 'main_article/js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'main_article/js/modernizr.js' %}"></script>
     <script type="text/javascript" src="{% static 'ckeditor/ckeditor/plugins/prism/lib/prism/prism_patched.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'ckeditor/ckeditor/plugins/youtube/plugin.js' %}"></script>
     <script type="text/javascript" src="{% static 'notifications/notice.js' %}"></script>
     <!-- jquerycookie,与cookie交互的jquery -->
     <script src=" http://cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.min.js "></script>

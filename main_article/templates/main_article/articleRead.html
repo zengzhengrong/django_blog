@@ -22,7 +22,7 @@
         </div>
     </header>
     <div class="meta">
-        <h2><a href="{% url 'main_article:articleRead' article.id %}">{{article.title}}</a></h2>
+        <h2><a>{{article.title}}</a></h2>
         <div class="meta aside-widget img-rounded">
             <i class="fa fa-user"></i>
              <a href="{% url 'main_article:userRead' article.author.profile.id %}" >
@@ -74,7 +74,7 @@
 	{% if superlikes %}
 	 :	
 	{% for user_likes_name in superlikes %}
-	<a id="userlike" class="userlikes">{{user_likes_name.username}}</a>
+	<a id="userlike" class="userlikes">{{user_likes_name.profile.get_nickname_or_username}}</a>
 	{% if not forloop.last %}
 	,
 	{% endif %}

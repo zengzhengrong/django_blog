@@ -4,7 +4,8 @@ from urllib import request
 from imagekit import ImageSpec
 from imagekit.processors import ResizeToFill
 from blog import settings
-
+import re
+from django.template.defaultfilters import striptags
 # 配置日志信息
 
 class Thumbnail(ImageSpec):
@@ -36,4 +37,19 @@ def save_avatar_img(img_url,file_name,file_path=settings.MEDIA_ROOT +'/'+'github
     except Exception as e:
         print ('Erroroperation ：',e)
     return '/github_avatar/'+file_name+'/'+ file_name +'.png'
-
+def title_list(content):
+    pattern = re.compile(r'<h\d.*</h\d>')
+    
+    math = pattern.findall(content)
+    html = '<ul>'
+    # print(math)
+    # print('')
+    for subtitle_index in range(len(math)):
+        math_replace = math[subtitle_index].replace('：' if math[subtitle_index].find(':') == -1 else ':','')
+        # print(True if math[subtitle_index].find(':') else False)
+        if math[subtitle_index].startswith('<h4'):
+            html += '<li><a href="#{}">{}</a></li>'.format(striptags(math_replace),striptags(math_replace))
+        if math[subtitle_index].startswith('<h5'):
+            html += '<ul><li><a href="#{}">{}</a></li></ul>'.format(striptags(math_replace),striptags(math_replace))
+    html +='</ul>'
+    return html

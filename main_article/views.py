@@ -23,7 +23,7 @@ from activity_stream.models import Action
 from guestbook.models import Guestbook_Category
 from multiprocessing.sharedctypes import template
 from django.views.decorators.cache import cache_page
-from .utils import save_avatar_img
+from .utils import save_avatar_img,title_list
 from django.core.mail import send_mail
 from django.contrib import auth
 import logging
@@ -52,7 +52,7 @@ def Check_Daily_Click(request):
                 create_click_oj.save()
             return False
     except AttributeError as e:
-        print (u'error：',e)
+        # print (u'error：没有登陆',e)
         pass
     return True
 
@@ -85,18 +85,20 @@ def article(request):
                 print (u'error：',e)   
         pass
     articles = Article.objects.all()
-    for article in articles:
-        
-        
+    
+    for article in articles:    
+    #重构部分
         commentnum = Comment.objects.filter(post = article)
-        article.comment_num = commentnum.__len__()        
-        article.save()
+        if not article.comment_num == commentnum :
+            article.comment_num = commentnum.__len__()        
+            article.save()
 
     # 上述为文章显示和阅读量显示
     articlecount = articles.__len__()
          
     paginator = Paginator(articles,4)
     # print(dir(paginator))
+    #获取当前页数，没有获取到就设定为1
     page_num = request.GET.get('page',1)
 
     try:
@@ -113,7 +115,7 @@ def article(request):
             current_page_round.append('...')
         # 添加首页尾页
         if current_page_round[0] != 1 :
-            current_page_round.insert(0,1)
+            current_page_round.insert(0,1) # 在0位置插入1
         if current_page_round[-1] != paginator.num_pages :
             current_page_round.append(paginator.num_pages)
     except PageNotAnInteger:
@@ -128,8 +130,11 @@ def article(request):
     master = get_object_or_404(Userprofile,user=superuser)
     
     '''
-    master = User.objects.get(username='admin')
-    Userprofile.objects.get_or_create(user=master)
+    try:
+        master = User.objects.get(username='admin')
+        Userprofile.objects.get_or_create(user=master)
+    except User.DoesNotExist:
+        master = None
     context = {'articles':articles,
                'current_page_round':current_page_round,
                'articlecount':articlecount,
@@ -209,9 +214,12 @@ def articleRead(request,articleId):
     
     if request.method == 'GET':
         template = 'main_article/articleRead.html'
-        articleToRead = get_object_or_404(Article, id=articleId)
         
+        articleToRead = get_object_or_404(Article, id=articleId)
+        subtitle_list = title_list(articleToRead.content)
+        # print(subtitle_list)
         logger.info(articleToRead)
+        
         if not request.COOKIES.get('blog_%s_read_num' % articleId):
             # print('read+1')
             articleToRead.read_num += 1
@@ -230,7 +238,8 @@ def articleRead(request,articleId):
     'comment_num':Comment.objects.filter(post=articleToRead).__len__(),
     'similar_articles':similar_article[:5],
     'superlikes':articleToRead.superlikes.all()[:5],
-    'page_title':'{}的博客'.format(articleToRead.title)
+    'page_title':'{}的博客'.format(articleToRead.title),
+    'title_list_html':subtitle_list
     }
     
     '''

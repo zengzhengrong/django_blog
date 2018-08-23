@@ -649,6 +649,12 @@ Blog styles
 .aside-widget {
   margin-bottom: 40px;
   border: 1px solid #ddd;
+  
+}
+.aside-widget-fixed {
+  margin-bottom: 40px;
+  border: 1px solid #ddd;
+  position: fixed;
 }
 
 .aside-widget header {

@@ -11,12 +11,12 @@ from django.utils import timezone
 import urllib.parse
 import codecs
 import sys
-
+import re
+import time
 #
 
 
 #User.add_to_class('following',models.ManyToManyField('self',through=Contact,related_name='followers',symmetrical=False))    
-
 
 
 class Userprofile(models.Model):
@@ -43,15 +43,18 @@ class Userprofile(models.Model):
         return self.user.username 
     #复写save()方法
     def save(self, *args, **kwargs):
-        # 原来的存取方式'avatar'/'avatar.name'
-        # 修改为'avatar'/'user.username'/'avatar.name'
-        # 将self.avatar.name加入到序列中，判断元素是否唯一
-        # self.avatar.name = [self.avatar.name]
+        '''
+    # 原来的存取方式'avatar'/'avatar.name'
+    # 修改为'avatar'/'user.username'/'avatar.name'
+    # 将self.avatar.name加入到序列中，判断元素是否唯一
+    #self.avatar.name = [self.avatar.name]
+        '''
         #print(self.avatar.name.split('/'))
         if len(self.avatar.name.split('/')) == 1:
             self.avatar.name = '%s/%s' % (self.user.username,self.avatar.name)
             self.avatar.name = urllib.parse.quote(self.avatar.name)[:10]
             # print(self.avatar.name)
+        
         super(Userprofile, self).save()
 
     def get_nickname_or_username(self): # 获取nickname或者username
@@ -121,16 +124,64 @@ class Article(models.Model):
     read_num = models.IntegerField(default=0,verbose_name='阅读次数')
     author = models.ForeignKey(User,verbose_name='作者',related_name='user_articles',on_delete=models.SET_NULL,null=True)
     comment_num = models.IntegerField(default=0,verbose_name='评论数') 
-    excerpt = models.CharField(max_length=200, blank=True,verbose_name='摘录') 
+    excerpt = models.TextField(blank=True,verbose_name='摘录') 
     superlikes = models.ManyToManyField(User,blank=True,verbose_name='超级赞',related_name='user_likes')
+    is_subtitle_list = models.BooleanField(default=False,verbose_name='是否生成目录')
     class Meta:
         ordering = ['-pubDateTime']
         verbose_name='文章'
         verbose_name_plural=verbose_name
     def save(self,*args, **kwargs):
+        
         if not self.excerpt:
             self.excerpt = strip_tags(self.content)[:200]  
+        # 为<h4><h5>添加id
+        if not self.is_subtitle_list:  
+            pattern = re.compile('<h\d.*</h\d>')
+            math = pattern.findall(self.content)# list[math1,math2]  
+            # print(True)
+            # print(math)
+            content_list = list(self.content)
+            # print(content_list)
+            start = 0 
+            id_list = []
+            for add_id in range(content_list.count('h')):
+                try:
+                    index_h = content_list.index('h',start)
+                except:
+                    break
+                # print(index_h)
+                
+                start = index_h+1
+                if content_list[index_h-1] =='<' and content_list[index_h-1] !='/':
+                    content_list.insert(index_h+2, ' id')
+                # print(content_list)
+            try:
+                start_name = 0
+                # print(content_list.count(' id'))
+                # print(len(math))
+                # print(content_list.count(' id') == len(math))
+                if content_list.count(' id') == len(math):
+                    for subtitle_index in range(len(math)):
+                        math_replace = strip_tags(math[subtitle_index].replace('：' if math[subtitle_index].find(':') == -1 else ':',''))
+                        id_index = content_list.index(' id', start_name)
+                        start_name = id_index+1
+                        idname = content_list[id_index].replace('id','id={}'.format(math_replace))
+                        del content_list[id_index]
+                        content_list.insert(id_index,idname)
+                        # print(idname)
+                        # print(content_list) 
+                
+            except Exception as e:
+                print(e)
+            self.content = ''.join(content_list)
+            if len(math)>0:
+                # print(math)
+                self.is_subtitle_list = True
+            # print(self.content)
+                
         super(Article,self).save(*args, **kwargs)
+        
     def get_absolute_url(self):
         return reverse('main_article:articleRead',args=[self.id])
     def __str__(self):

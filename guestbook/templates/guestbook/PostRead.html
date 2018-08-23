@@ -11,7 +11,7 @@
 {% block content %}
 <article class="blog-post">
     <div class="meta">
-        <h2><a href="#">{{post.title}}</a></h2>
+        <h2><a>{{post.title}}</a></h2>
         <div class="meta aside-widget img-rounded">
             <i class="fa fa-user"></i>
              <a href="{% url 'main_article:userRead' post.author.id %}">

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.forms import ModelForm,TextInput
-from suit.widgets import NumberInput,AutosizedTextarea
+from suit.widgets import NumberInput,AutosizedTextarea,LinkedSelect,Select
 from main_article.models import Article,Category,Userprofile,Contact,Daily_click,First_login
 from django import forms
 
@@ -15,6 +15,7 @@ class ArticleForm(ModelForm):
             'comment_num': NumberInput(attrs={'class': 'input-mini'}),
             'excerpt': AutosizedTextarea(attrs={'rows': 3,'class': 'input-xlarge'})
             
+            
         }
 class ArticleModelAdmin(admin.ModelAdmin):
     form=ArticleForm
@@ -28,7 +29,7 @@ class ArticleModelAdmin(admin.ModelAdmin):
         return super(ArticleModelAdmin, self).get_queryset(request).prefetch_related('tags')
 
     def tag_list(self, obj):
-        return u", ".join(o.name for o in obj.tags.all())  
+        return u", ".join(o.name for o in obj.tags.all())
         
 class CategoryModelAdmin(admin.ModelAdmin):
     list_display = ['id','name','pubDateTime']

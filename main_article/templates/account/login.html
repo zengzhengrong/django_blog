@@ -10,11 +10,10 @@
 <div class="containter">	
 	<div class="row">
 		<div class="col-md-6 col-md-offset-6">	
-			<a style="float:right;" class="btn btn-info" href="{% url 'account_signup' %}">快速注册</a>
 			{% get_providers as socialaccount_providers %}
 			
 			{% if socialaccount_providers %}
-			<a>第三方登录</a>
+			<a>第三方登录:</a>
 			<div class="socialaccount_ballot">
 			
 			  <a class="socialaccount_providers">
@@ -27,8 +26,11 @@
 			{% include "socialaccount/snippets/login_extra.html" %}
 			{% endif %}
 			<div class="panel panel-default">
+      
 			  <div class="panel-heading">
-			    <h3 class="panel-title">使用本站账号</h3>
+        <a style="float:right;" class="btn btn-info" href="{% url 'account_signup' %}">注册</a>
+			    <h3 class="panel-title">使用本站账号:</h3>
+          
 			  </div>
 			  
 			  <div class="panel-body">
@@ -39,7 +41,7 @@
 				  {% if redirect_field_value %}
 				  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
 				  {% endif %}					
-				  <a style="float:left;" class="btn btn-warning" href="{% url 'account_reset_password' %}">忘记或修改密码?</a>  		  
+				  <a style="float:left;" class="btn btn-warning" href="{% url 'account_reset_password' %}">忘记密码?</a>  		  
 				  <div style="float:right;">
 				  	<button class="btn btn-primary"  type="submit">{% trans "Sign In" %}</button>
 				  	

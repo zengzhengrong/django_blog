@@ -273,8 +273,8 @@ CKEDITOR_CONFIGS = {
         #'removePlugins':'stylesheetparser',
         # 编辑器的宽高请根据你的页面自行设置
         #设置enter键利用<br>标签换行，shiftenter键使用<p>段落     
-        
-        'language':'zh-cn',
+        #'width':'auto'
+        'language':'zh-hans',
         'width':'auto',
         'height':'630px',
         'image_previewText':'点击上传->浏览选择照片->上传到服务器,左边可以调整图片大小,宽度不能超过750/////若要添加视频按链接按钮（CTRL+L）浏览服务器上传视频即可',
@@ -286,14 +286,11 @@ CKEDITOR_CONFIGS = {
             {'name':'base_style',
              'items':['Bold', 'Italic', 'Underline', 'TextColor', 'BGColor','Format', 'Strike', 'Font', 'FontSize','RemoveFormat']},
                            
-            {'name':'base_paragraph',                            
+            {'name':'base_paragraph',                      
              'items':['NumberedList', 'BulletedList','Blockquote','Outdent', 'Indent','-','JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']},
                            
-            {'name': 'forms',
-             'items': ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button','HiddenField']},               
-                           
             {'name':'insert',                
-             'items':['Image','-','Flash', 'Iframe', '-', 'Table', '-','CodeSnippet', '-','Templates','Link', 'Unlink','Anchor']},
+             'items':['Image','-','Flash', 'Iframe', '-', 'Table', '-','CodeSnippet', '-','Youtube','Link', 'Unlink','Anchor']},
                            
             {'name':'math_expression',               
             'items':['Subscript', 'Superscript', '-', 'HorizontalRule','SpecialChar', 'Smiley','Undo', 'Redo']},
@@ -317,9 +314,7 @@ CKEDITOR_CONFIGS = {
                                   'iframedialog',
                                   'embedbase',
                                   'flash',
-                                  
-                                  
-                                  
+                                  'youtube',                   
                                   'prism']),
     }
     ,'comment': {
@@ -336,7 +331,7 @@ CKEDITOR_CONFIGS = {
         'toolbar_Custom': [
             
             {'name':'base_style',
-             'items':['Bold', 'Italic', 'Underline', 'TextColor', 'BGColor','Format', 'Strike', 'Font', 'FontSize','RemoveFormat','CodeSnippet']},
+             'items':['Bold','Underline','TextColor','Format','RemoveFormat','CodeSnippet']},
                                      
             #{'name':'insert',                
             #'items':['Image']},
