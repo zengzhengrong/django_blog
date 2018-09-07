@@ -241,7 +241,7 @@ LOGGING = {
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 # static root
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_collected')
 # media root
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL='/media/'
@@ -324,7 +324,7 @@ CKEDITOR_CONFIGS = {
         
         'language':'zh-cn',
         'width':'auto',
-        'height':'200px',
+        'height':'auto',
         'image_previewText':' ',
         'tabSpaces': 4,
         'toolbar': 'Custom',
@@ -462,3 +462,7 @@ USER_ONLINE_TIMEOUT = 300
 CHAT_WS_SERVER_HOST = '127.0.0.1'
 CHAT_WS_SERVER_PORT = 5002
 CHAT_WS_SERVER_PROTOCOL = 'ws'
+
+
+# 设置分页
+SET_PAGE_FOR_ARTICLES = 7

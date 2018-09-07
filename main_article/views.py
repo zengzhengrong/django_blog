@@ -26,6 +26,7 @@ from django.views.decorators.cache import cache_page
 from .utils import save_avatar_img,title_list
 from django.core.mail import send_mail
 from django.contrib import auth
+from blog import settings
 import logging
 import random
 import string
@@ -96,7 +97,7 @@ def article(request):
     # 上述为文章显示和阅读量显示
     articlecount = articles.__len__()
          
-    paginator = Paginator(articles,4)
+    paginator = Paginator(articles,settings.SET_PAGE_FOR_ARTICLES)
     # print(dir(paginator))
     #获取当前页数，没有获取到就设定为1
     page_num = request.GET.get('page',1)
@@ -404,7 +405,7 @@ def categoryRead(request,categoryId):
     不需要在点击article链接
     '''
     articlecount = articles.__len__()
-    paginator = Paginator(articles,4)
+    paginator = Paginator(articles,settings.SET_PAGE_FOR_ARTICLES)
     page_num = request.GET.get('page',1)
     try:
         articles = paginator.page(page_num)
@@ -465,7 +466,7 @@ def tagRead(request,tagId):
     不需要在点击article链接
     '''
     articlecount = articles.__len__()
-    paginator = Paginator(articles,4)
+    paginator = Paginator(articles,settings.SET_PAGE_FOR_ARTICLES)
     page = request.GET.get('page')
     try:
         articles = paginator.page(page)
@@ -817,7 +818,7 @@ def send_email_code(request):
     return JsonResponse(data)
 
 def changepassword(request):
-    redirect_to = 'main_article:article'
+    redirect_to = request.GET.get('from',reverse('article'))
     template = 'account/change_password_form.html'
     context = {}
     if request.method == 'GET':

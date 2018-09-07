@@ -1,17 +1,18 @@
 
 body {
-  font-size: 16px;
-  line-height: 27px;
-  font-family: 'Open Sans', sans-serif;
+  /*font-size: 16px;*/
+  line-height: 23px;
+  /*font-family: 'Open Sans', sans-serif;*/
   color: #444;
   background-color: #fff;
+  margin:-2px;
 }
 
 a {
   color: #5b6268;
 }
 
-a:hover,
+a:hover{color:#0080ff}
 a:focus {
   text-decoration: none;
   color: #5b6268;
@@ -62,7 +63,7 @@ Font Awesome Icons
 }
 
 ::selection {
-  background: #566572;
+  background: #337ab7;
   /* Safari */
   color: #feffff;
 }
@@ -651,12 +652,6 @@ Blog styles
   border: 1px solid #ddd;
   
 }
-.aside-widget-fixed {
-  margin-bottom: 40px;
-  border: 1px solid #ddd;
-  position: fixed;
-}
-
 .aside-widget header {
   background-color: #f1f1f1;
   border-bottom: 1px solid #ddd;
@@ -678,6 +673,38 @@ Blog styles
   color: #5b6268;
 }
 
+/*========
+aside-widget-fixed for title_list
+==========*/
+.aside-widget-fixed {
+  clear: both;
+  margin-bottom: 40px;
+  border: 1px solid #ddd;
+  position: relative;
+  overflow: hidden;
+}
+.aside-widget-fixed header {
+  background-color: #f1f1f1;
+  border-bottom: 1px solid #ddd;
+}
+
+.aside-widget-fixed header h3 {
+  font-size: 24px;
+  padding: 10px 20px 3px 20px;
+  margin-top: 0;
+  color: #48535f;
+}
+
+.aside-widget-fixed .body {
+  margin: 10px 0;
+  padding: 5px;
+}
+.aside-widget-fixed a {
+  color: #5b6268;
+}
+.aside-widget-fixed a:hover {
+  color: #0080ff;
+}
 /* =============
 The tags widget 
 ================ */

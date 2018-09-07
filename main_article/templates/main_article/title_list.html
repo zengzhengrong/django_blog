@@ -1,36 +1,31 @@
-
-<div class="aside-widget img-rounded" id="title_list" style="top:auto;">
-    <header>
-    <h3>文章目录</h3>
-    </header>
-    {{title_list_html|safe}}
-<!--      
-    <ul class="clean-list">
-        <li><a href="#项目地址">项目地址</a></li>
-        <li><a href="#开发环境：py3.6、Django1.11">开发环境：py3.6、Django1.11</a></li>
-        <li><a href="#安装">安装</a></li>
-        <li><a href="#使用模板">使用模板</a>
-        <ul class="clean-list"><li><a href="#评论对象为空">评论对象为空</a></li></ul>
-        </li>
-        <li><a href="#引入静态文件">引入静态文件</a></li>
-        <li><a href="#通知功能">通知功能</a>
-        <ul class="clean-list"><li><a href="#添加管理员">添加管理员</a></li><li><a href="#开启站内通知">开启站内通知</a></li><li><a href="#开启邮件通知">开启邮件通知</a></li></ul>
-        </li>
-        <li><a href="#关于django-ckeditor">关于django-ckeditor</a></li>
-        <li><a href="#总结">总结</a></li>
-        <li>
-            <a href="#评论">评论</a>
-        </li>
-    </ul>
--->    
+<div class="fixed">
+  <div class="aside-widget-fixed img-rounded" id="title_list">
+      <header>
+      <h3>文章目录</h3>
+      </header>
+      {{title_list_html|safe}}   
+  </div>
 </div>
+<!-- 
 <script type="text/javascript">
-$(function(){
-   $(window).scroll(function(){
-      var oldT = 100;
-      var T = $("body").scrollTop();
-      T = T + oldT + "px";
-      setTimeout(function(){$("#title_list").css("top",T);},200);
-   })
-})
+$(window).scroll(function() {
+    var sidebar = $('.blog-aside');
+    var sidebarHeight = sidebar.height();
+    var windowScrollTop = $(window).scrollTop();
+    if (windowScrollTop > sidebarHeight - 60 && sidebar.length) {
+        $('.fixed').css({
+            'position': 'fixed',
+            'top': '320px',
+            'width': '360px'
+        });
+    } else {
+        $('.fixed').removeAttr("style");
+    }
+    $('.fixed_index').css({
+            'position': 'fixed',
+            'top': '100px',
+            'width': '360px'
+        });
+});
 </script>
+ -->
