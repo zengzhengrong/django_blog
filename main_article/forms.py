@@ -1,5 +1,5 @@
 from django import forms
-from main_article.models import Article,Category,Userprofile
+from main_article.models import Article,Category,Userprofile,THUMB_TYPE_CHOICES
 from extra_apps.ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django.contrib.auth.models import User
 from taggit.models import Tag
@@ -13,14 +13,16 @@ import re
 
 
 class ArticleForm(forms.ModelForm):
-    title = forms.CharField(label='标题',max_length=128,widget=forms.TextInput(attrs={'class':'form-control','placeholder':'必填'}))   
+    title = forms.CharField(label='标题',max_length=128,widget=forms.TextInput(attrs={'class':'form-group','placeholder':'必填'}))   
     content = forms.CharField(label='正文',widget = CKEditorUploadingWidget())
-    category = forms.ModelChoiceField(label='分类',queryset=Category.objects.all()) 
+    category = forms.ModelChoiceField(label='分类',queryset=Category.objects.all())
+    thumb_type = forms.ChoiceField(label='生成封面类型',choices=THUMB_TYPE_CHOICES,widget=forms.Select(attrs={'onchange':'show_thumb()'}))
+    thumbnail = forms.ImageField(label='自定义封面',required=False,widget=forms.FileInput(attrs={'class':'form-group hidden'})) 
     #tags = forms.CharField(label='标签(选填)',widget=forms.TextInput(attrs={'class':'form-control','placeholder':'用空格或者英文逗号分割标签'}))
 
     class Meta:
         model = Article
-        fields = ('title','tags','content','category')
+        fields = ('title','category','thumb_type','thumbnail','tags','content')
     
     def clean(self):
         cleanedData = self.cleaned_data

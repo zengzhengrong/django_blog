@@ -1,0 +1,1 @@
+default_app_config = 'main_article.apps.MainArticleConfig'

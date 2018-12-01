@@ -1,36 +1,41 @@
 # coding=utf-8
 import datetime
-from django.shortcuts import render,redirect,get_object_or_404
-from django.contrib import messages
-from main_article.models import Article,Category,Userprofile,Contact,Daily_click,First_login
-from easy_comment.models import Comment
-from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
-from main_article.forms import ArticleForm,UserprofileForm,ChangeEmailForm,ChangePasswordForm
-from django.db.models.query_utils import Q
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.contrib.syndication.views import Feed
-from django.urls import reverse
-from taggit.models import Tag
-from django.utils import timezone
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
-from decorators.decorator import admin_required,ajax_required,author_required
-from django.utils.html import strip_tags
-from django.http.response import HttpResponse
-from activity_stream.utils import create_action
-from activity_stream.models import Action
-from guestbook.models import Guestbook_Category
-from multiprocessing.sharedctypes import template
-from django.views.decorators.cache import cache_page
-from .utils import save_avatar_img,title_list
-from django.core.mail import send_mail
-from django.contrib import auth
-from blog import settings
 import logging
 import random
 import string
 import time
+from multiprocessing.sharedctypes import template
+
+from django.conf import settings
+from django.contrib import auth, messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib.syndication.views import Feed
+from django.core.mail import send_mail
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.db.models.query_utils import Q
+from django.http import JsonResponse
+from django.http.response import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.html import strip_tags
+from django.views.decorators.cache import cache_page
+from django.views.decorators.http import require_POST
+from taggit.models import Tag
+
+from activity_stream.models import Action
+from activity_stream.utils import create_action
+from decorators.decorator import admin_required, ajax_required, author_required
+from easy_comment.models import Comment
+from guestbook.models import Guestbook_Category
+from main_article.forms import (ArticleForm, ChangeEmailForm,
+                                ChangePasswordForm, UserprofileForm)
+from main_article.models import (Article, Category, Contact, Daily_click,
+                                 First_login, Userprofile)
+
+from .utils import save_avatar_img, title_list
+
 logger = logging.getLogger('main_article')
 
 
@@ -290,8 +295,8 @@ def articleUpdate(request, articleId):
         articleForm = ArticleForm(instance=articleToUpdate)
         return render(request, template, {'articleForm':articleForm, 'article':articleToUpdate,'tags':Tag.objects.all(),'page_title':'修改博客'})
     # POST
-    articleForm = ArticleForm(request.POST, instance=articleToUpdate)
-
+    articleForm = ArticleForm(request.POST,request.FILES,instance=articleToUpdate)
+    
     # print(articleForm)
     if not articleForm.is_valid():
         return render(request, template, {'articleForm':articleForm, 'article':articleToUpdate})
@@ -299,7 +304,8 @@ def articleUpdate(request, articleId):
     articleUpdateForm = articleForm.save(commit=False)
     
     articleUpdateForm.upDateTime = timezone.now()
-    articleUpdateForm.excerpt = strip_tags(articleUpdateForm.content)[:200]
+    # articleUpdateForm.excerpt = strip_tags(articleUpdateForm.content)[:200]
+    articleUpdateForm.is_thumbnail = False
     articleUpdateForm.save()
     articleForm.save_m2m()
     create_action(request.user, '修改了文章',articleUpdateForm)
@@ -561,14 +567,14 @@ def userProfile(request):
         
         context = {
             'userprofileform':profileupdateform,
-           'userRead':user_to_read,
-           'user_articles':user_articles,
-           'user_comments':user_comments,
-           'user_articles_count':user_articles_count,
-           'userprofile':'userprofile',
-           'myposts':myposts[0:5],
-           'myactions':actions[0:10],
-           'page_title':'个人信息'
+            'userRead':user_to_read,
+            'user_articles':user_articles,
+            'user_comments':user_comments,
+            'user_articles_count':user_articles_count,
+            'userprofile':'userprofile',
+            'myposts':myposts[0:5],
+            'myactions':actions[0:10],
+            'page_title':'个人信息'
            }
         
         if request.is_ajax():

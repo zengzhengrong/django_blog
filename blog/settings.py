@@ -25,7 +25,7 @@ SECRET_KEY = 'qq3x%odtj1jaf*=5c3!7kp@fkbd@b6cs=af%_($(_lhoh34dc3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '172.96.18.168','localhost ', '.pancake.red' ,'.znegzhengrong.com']
+ALLOWED_HOSTS = ['127.0.0.1', '172.96.18.168','localhost', '.pancake.red' ,'.znegzhengrong.com']
 
 
 # Application definition
@@ -270,7 +270,7 @@ CACHES = {
 
 CKEDITOR_CONFIGS = {
     'default': {
-        #'removePlugins':'stylesheetparser',
+        'removePlugins':'stylesheetparser',
         # 编辑器的宽高请根据你的页面自行设置
         #设置enter键利用<br>标签换行，shiftenter键使用<p>段落     
         #'width':'auto'

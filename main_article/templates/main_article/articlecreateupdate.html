@@ -7,10 +7,10 @@
 
 {% block content %}
 {% if article %}
-    <form method="post" action="{% url 'main_article:articleUpdate' article.id %}">
-{% endif %}
-    <form method="post" action="{% url 'main_article:articleCreate' %}">
-      
+    <form method="post" enctype="multipart/form-data" action="{% url 'main_article:articleUpdate' article.id %}">
+{% else %}
+    <form method="post" enctype="multipart/form-data" action="{% url 'main_article:articleCreate' %}">
+{% endif %}      
       {% csrf_token %}
                  参考标签：
       {% for tag in tags %}
@@ -25,7 +25,7 @@
       {{ articleForm|crispy }}
       
       <input class="btn btn-primary" type="submit" value="发表" onclick="{% if article %}return update() {% else %}return post() {% endif %}">
-      <a class="btn btn-danger" href="{% url 'main_article:article' %}">放弃</a>
+      <a class="btn btn-danger pull-right" href="{% url 'main_article:article' %}">放弃</a>
     </form>
 {% endblock %}
 {% block extra_js %}
@@ -33,6 +33,22 @@
 document.body.onbeforeunload = function()
 {
 window.event.returnValue = '您即将离开本页面,确定继续吗?';
+}
+//$('#id_thumbnail').addClass('hidden')
+$('label[for="id_thumbnail"]').addClass('hidden');
+if(document.getElementById("id_thumb_type").value == 'CUSTOM'){
+    $("#id_thumbnail").removeClass('hidden')
+    $('label[for="id_thumbnail"]').removeClass('hidden')
+}
+function show_thumb(){
+    if(document.getElementById("id_thumb_type").value == 'CUSTOM'){
+    $("#id_thumbnail").removeClass('hidden')
+    $('label[for="id_thumbnail"]').removeClass('hidden')
+    }
+    else{
+        $("#id_thumbnail").addClass('hidden')
+        $('label[for="id_thumbnail"]').addClass('hidden')
+    }
 }
 </script>
 

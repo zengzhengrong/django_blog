@@ -2,11 +2,20 @@
  {% for article in articles %}              
 <div class="row">  
      <div class="col-md-12 col-sm-12 ">        
-          <article class=" blog-teaser  img-rounded">        
+          <article class=" blog-teaser  img-rounded">
+                
               <header>      
                   <!-- <img src="{% static 'main_article/img/1.jpg'%}">    -->       
                   <h4>
-                  <a  class="article_title" href="{% url 'main_article:articleRead' article.id %}"><b>{{ article.title }}</b></a>
+                  <a  class="article_title" href="{% url 'main_article:articleRead' article.id %}">
+                  {% if article.thumb_type == 'CUSTOM' %}
+                    <img class="img-rounded" src="{{article.thumbnail.url}}">
+                  {% elif article.thumbnail %}
+                    <img class="img-rounded" src="{{article.thumbnail}}">
+                  {% endif %}
+<!--                   <img class="img-rounded" src="{% static 'main_article/img/single-post.jpg'%}"> -->
+                  <b>{{ article.title }}</b>
+                  </a>
                   </h4>
                    <span class="meta">
                    {{ article.excerpt|safe}}...

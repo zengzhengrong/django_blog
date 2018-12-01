@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Dialog, Message
+from extra_apps.django_private_chat.models import Dialog, Message
 
 
 class DialogAdmin(admin.ModelAdmin):

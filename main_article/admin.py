@@ -3,6 +3,7 @@ from django.forms import ModelForm,TextInput
 from suit.widgets import NumberInput,AutosizedTextarea,LinkedSelect,Select
 from main_article.models import Article,Category,Userprofile,Contact,Daily_click,First_login
 from django import forms
+from imagekit.admin import AdminThumbnail
 
 class ArticleForm(ModelForm):
     class Meta:
@@ -19,10 +20,11 @@ class ArticleForm(ModelForm):
         }
 class ArticleModelAdmin(admin.ModelAdmin):
     form=ArticleForm
-    list_display = ['id','title','read_num','likes','author','tag_list','pubDateTime','upDateTime']
+    list_display = ['id','title','read_num','likes','author','tag_list','pubDateTime','upDateTime','title_thumbnail']
     list_display_links = ['title']
     list_filter = ['title','pubDateTime','author']
     search_fields = ['title']
+    title_thumbnail = AdminThumbnail(image_field='thumbnail')
     class Meta:    
         model = Article     
     def get_queryset(self, request):
@@ -52,9 +54,9 @@ class UserProfileForm(ModelForm):
         }
 '''
 class UserProfileModelAdmin(admin.ModelAdmin):
-    list_display = ['id','user','get_articles','nickname','qq','address','weibourl','avatar','bonuspoints']
+    list_display = ['id','user','get_articles','nickname','qq','address','weibourl','admin_thumbnail','bonuspoints']
     list_display_links = ['user']
-    
+    admin_thumbnail = AdminThumbnail(image_field='avatar')
     def get_queryset(self, request):
         return admin.ModelAdmin.get_queryset(self, request).prefetch_related('user__user_articles')
     def get_articles(self,obj):     

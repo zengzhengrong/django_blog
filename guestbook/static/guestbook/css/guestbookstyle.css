@@ -1,6 +1,6 @@
 
 body {
-  font-size: 16px;
+  font-size: 1.5em;
   line-height: 27px;
   font-family: 'Open Sans', sans-serif;
   color: #444;
@@ -1416,4 +1416,18 @@ font-weight:bold;
 }
 .prenext{
 color:#808080; 
+}
+.round_icon{
+  border: 3px solid rgba(0,0,0,0.5);
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: all 1s ease-in-out;  
+  -webkit-transition: all 1s ease-in-out;  
+  -moz-transition: all 1s ease-in-out;  
+  -o-transition: all 1s ease-in-out;   
+  
 }

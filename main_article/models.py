@@ -8,6 +8,7 @@ from django.utils.html import strip_tags
 from taggit.managers import TaggableManager
 from django.urls import reverse
 from django.utils import timezone
+from .utils import frist_img,img_wordcloud,custom_img
 import urllib.parse
 import codecs
 import sys
@@ -17,7 +18,12 @@ import time
 
 
 #User.add_to_class('following',models.ManyToManyField('self',through=Contact,related_name='followers',symmetrical=False))    
-
+THUMB_TYPE_CHOICES=[
+    ('NONE','不添加'),
+    ('CIMG','以内容第一张图片作为封面'),
+    ('WC','标题词云'),
+    ('CUSTOM','自定义封面')
+]
 
 class Userprofile(models.Model):
     user = models.OneToOneField(User, related_name='profile',on_delete=models.CASCADE)
@@ -127,14 +133,36 @@ class Article(models.Model):
     excerpt = models.TextField(blank=True,verbose_name='摘录') 
     superlikes = models.ManyToManyField(User,blank=True,verbose_name='超级赞',related_name='user_likes')
     is_subtitle_list = models.BooleanField(default=False,verbose_name='是否生成目录')
+    thumb_type = models.CharField(choices=THUMB_TYPE_CHOICES, max_length=20,default='NONE',verbose_name='生成封面类型')
+    is_thumbnail = models.BooleanField(default=False,verbose_name='是否生成封面')
+    thumbnail = ProcessedImageField(upload_to='title',
+                                 default=None, 
+                                 verbose_name='封面',
+                                 null = True,
+                                 blank=True,
+                                 processors=[ResizeToFill(615,300)],
+                                 )
     class Meta:
         ordering = ['-pubDateTime']
         verbose_name='文章'
         verbose_name_plural=verbose_name
+    def get_thumb_img(self):
+        if self.thumb_type == 'NONE':
+            return None
+        if self.thumb_type == 'CIMG':
+            return frist_img(self.content,self.id)
+        if self.thumb_type == 'WC':
+            return img_wordcloud(self.title,self.id)
+        if self.thumb_type == 'CUSTOM':
+            return self.thumbnail
     def save(self,*args, **kwargs):
-        
+        # 创建摘录-200字符
         if not self.excerpt:
             self.excerpt = strip_tags(self.content)[:200]  
+        # 创建缩略图
+        if not self.is_thumbnail:
+            self.thumbnail = self.get_thumb_img()
+            self.is_thumbnail = True
         # 为<h4><h5>添加id
         if not self.is_subtitle_list:  
             pattern = re.compile('<h\d.*</h\d>')
@@ -163,7 +191,8 @@ class Article(models.Model):
                 # print(content_list.count(' id') == len(math))
                 if content_list.count(' id') == len(math):
                     for subtitle_index in range(len(math)):
-                        math_replace = strip_tags(math[subtitle_index].replace('：' if math[subtitle_index].find(':') == -1 else ':',''))
+                        math_replace = strip_tags(math[subtitle_index].replace('：' \
+                        if math[subtitle_index].find(':') == -1 else ':',''))
                         id_index = content_list.index(' id', start_name)
                         start_name = id_index+1
                         idname = content_list[id_index].replace('id','id={}'.format(math_replace))
