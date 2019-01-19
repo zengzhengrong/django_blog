@@ -42,6 +42,10 @@
             {% endfor %}
         </div>
     </div>
+
+{% endblock %}
+
+{% block extra_js %}
     <script>
         $(document).ready(function () {
             $(".list-group a").click(function () {
@@ -51,4 +55,4 @@
             $(".notifications img").removeAttr('style');
         });
     </script>
-{% endblock %}
+{% endblock extra_js %}

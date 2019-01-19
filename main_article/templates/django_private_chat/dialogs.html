@@ -89,7 +89,7 @@
         var base_ws_server_path = "{{ ws_server_path }}";
         $(document).ready(function () {
             var websocket = null;
-
+            var server_code = null;
             function getOpponnentUsername() {
                 return "{{ opponent_username }}";
             }
@@ -158,7 +158,7 @@
             function setupChatWebSocket() {
                 var opponent_username = getOpponnentUsername();
                 websocket = new WebSocket(base_ws_server_path + '{{ request.session.session_key }}/' + opponent_username);
-
+                
                 websocket.onopen = function (event) {
                     var opponent_username = getOpponnentUsername();
 
@@ -279,13 +279,32 @@
                     websocket.send(packet);
                 }
             });
-
+                
             $('#btn-send-message').click(function (e) {
                 var $chatInput = $('#chat-message');
                 var msg = $chatInput.val();
+                var opponent_username = getOpponnentUsername(); 
+                //var ws = new WebSocket(base_ws_server_path + '{{ request.session.session_key }}/' + opponent_username);
                 if (!msg) return;
                 sendMessage($chatInput.val());
                 $chatInput.val('')
+                var is_offline = $('#user-'+opponent_username).hasClass("btn-danger") ? true: false;       
+                server_code = websocket.readyState
+                console.log('ws connectd code:',server_code)
+                if(server_code == 1){
+                    // add ajax to send notifications
+                    $.ajax({
+                    url:"{% url 'main_article:get_chat_offline' opponent_username %}",
+                    type:"GET",
+                    data:{
+                    'offline':is_offline
+                    },
+                    cache:false,
+                    success:function(data){         
+                        console.log(data['status'])
+                    }
+                    });
+                }       
             });
 
             setupChatWebSocket();

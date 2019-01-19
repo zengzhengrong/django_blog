@@ -13,11 +13,13 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+import notifications.urls
+from api.urls import api_urlpatterns
 from django.urls import re_path,path,include
 from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib import admin
-import notifications.urls
+
 
 urlpatterns = [
     re_path(r'^admin/', admin.site.urls),
@@ -30,6 +32,8 @@ urlpatterns = [
     re_path(r'^notifications/', include(('notifications.urls','notifications'))),
     re_path(r'^guestbook/',include(('guestbook.urls','guestbook'))),
     re_path(r'^', include('extra_apps.django_private_chat.urls')),
-    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('api-auth/', include('rest_framework.urls')),
+    ] 
 
-
+urlpatterns += api_urlpatterns
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

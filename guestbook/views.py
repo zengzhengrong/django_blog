@@ -117,7 +117,7 @@ def g_categoryUpdate(request,g_categoryId):
     template = 'main_article/categoryUpdate.html'
     category = get_object_or_404(Guestbook_Category,id=g_categoryId)
     if request.method == 'GET':
-        return render(request, template,{'category':category})
+        return render(request, template,{'category':category,'page_title':'更新留言分类'})
     #POST
     content = request.POST.get('content')
     category.name = content

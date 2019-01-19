@@ -9,3 +9,4 @@ logs/
 Pipfile
 Pipfile.lock
 media/
+django_blog.code-workspace

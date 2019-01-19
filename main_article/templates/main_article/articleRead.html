@@ -1,6 +1,6 @@
 {% extends 'main_article/base.html' %}
 {% load staticfiles %}
-
+{% load catalog_tags %}
 {% block page_title %}
 {{ page_title }}
 {% endblock %}
@@ -49,7 +49,7 @@
             </a>
             {% endfor %}
         </div>
-        <div class="article_content">{{ article.content|safe}}</div>
+        <div class="article_content">{{ article.content|catalog }}</div>
         
     </div>
 </article>

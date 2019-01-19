@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ['127.0.0.1', '172.96.18.168','localhost', '.pancake.red' ,'.zne
 # Application definition
 
 INSTALLED_APPS = [
-    #django-suit theme
+    # django-suit theme
     'suit',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -40,33 +40,37 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main_article',
-    #ckeditor
+    # ckeditor
     'ckeditor',
     'ckeditor_uploader',
-    #allauth
+    # allauth
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    #allauth provider
+    # provider
     'allauth.socialaccount.providers.github',
-    #accountprofile
+    # accountprofile
     'crispy_forms',
     'imagekit',
-    #comment
+    # comment
     'mptt',
     'easy_comment',
     'notifications',
-    #登陆状态
+    # 登陆状态
     'online_status',
-    #标签
+    # 标签
     'taggit',
     #留言板
     'guestbook',      
-    #用户动态
+    # 用户动态
     'activity_stream',
-    #private_chat//私信
-    'extra_apps.django_private_chat'
+    # private_chat//私信
+    'extra_apps.django_private_chat',
+    # 目录
+    'catalog',
+    # rest framework
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -455,14 +459,31 @@ COMMENT_ENTRY_MODEL = 'main_article.Article'
 AUTH_USER_MODEL = 'auth.user'
  
 #设置通知人
-ADMINS = (('zzr', '506862754@qq.com'),) 
+ADMINS = (('admin', '506862754@qq.com'),) 
 #online_status,5分钟(300秒)视为不在线，不填默认600秒
-USER_ONLINE_TIMEOUT = 300
+USER_ONLINE_TIMEOUT = 900
 #private_chat 私信设置，本机port:5002
 CHAT_WS_SERVER_HOST = '127.0.0.1'
 CHAT_WS_SERVER_PORT = 5002
 CHAT_WS_SERVER_PROTOCOL = 'ws'
-
-
+DATETIME_FORMAT = 'Y-m-d H:i'
 # 设置分页
 SET_PAGE_FOR_ARTICLES = 7
+
+# 设置过滤目录标签：默认title为h4和subtitle为h5
+# SET_CATALOG_ID = ('h2','h3')
+
+# rest
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ),
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 5
+}

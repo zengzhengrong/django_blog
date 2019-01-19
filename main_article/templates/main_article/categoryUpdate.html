@@ -6,7 +6,7 @@
 
 {% block content %}
 <p>已选择：<b>{{ category }}</b>
- <form class="inlineBlock" method="post" action="{% url 'guestbook:g_categoryUpdate' category.id %}">
+ <form class="inlineBlock" method="post" action="">
     {% csrf_token %} 
     <input type="text" name="content" value="{{ category }}">       
     <input class="btn" type="submit" value="提交">

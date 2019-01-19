@@ -8,8 +8,11 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from extra_apps.django_private_chat.models import Dialog,Message
 from main_article.models import Contact
+from main_article.views import get_chat_offline
+from django.http import JsonResponse
 import logging
 logger = logging.getLogger('send_email')
+
 def get_recipient():
     admins = [i[0] for i in settings.ADMINS]
     app_model = settings.AUTH_USER_MODEL.split('.')
@@ -41,7 +44,7 @@ def email_handler(*args):
         except Exception as e:
             print("Error in easy_comment.handlers.py.email_handler: %s" % e)
 
-def comment_handler(sender, instance, created, **kwargs):
+def comment_handler(sender, instance, created, **kwargs): 
     if created:
         recipient = ADMINS.exclude(id=instance.user.id)
         if not instance.parent is None:
@@ -108,16 +111,15 @@ def chat_handler(sender, instance, created, **kwargs):
 post_save.connect(chat_handler, sender=Dialog) 
 
 
-def message_handler(sender,instance,created,**kwargs):
-    if created:
-        print('success send notification')
-        notify.send(instance.sender,
-                    recipient=instance.dialog.opponent if not instance.dialog.opponent.username==instance.sender.username \
-                    else instance.dialog.owner,
-                    verb='私信了你',
-                    description=instance.text)
-post_save.connect(message_handler, sender=Message)
-
+# def message_handler(sender,instance,created,**kwargs):
+#     if created:
+#         print('success send notification')
+#         notify.send(instance.sender,
+#                     recipient=instance.dialog.opponent if not instance.dialog.opponent.username==instance.sender.username \
+#                     else instance.dialog.owner,
+#                     verb='私信了你',
+#                     description=instance.text)
+# post_save.connect(message_handler, sender=Message)
 
 def follow_handler(sender,instance,created,**kwargs):
     if created:

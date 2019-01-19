@@ -34,8 +34,10 @@ from main_article.forms import (ArticleForm, ChangeEmailForm,
 from main_article.models import (Article, Category, Contact, Daily_click,
                                  First_login, Userprofile)
 
-from .utils import save_avatar_img, title_list
-
+from .utils import save_avatar_img
+from extra_apps.django_private_chat.models import Message
+from notifications.signals import notify
+from django.utils.timezone import now
 logger = logging.getLogger('main_article')
 
 
@@ -96,11 +98,11 @@ def article(request):
     #重构部分
         commentnum = Comment.objects.filter(post = article)
         if not article.comment_num == commentnum :
-            article.comment_num = commentnum.__len__()        
+            article.comment_num = len(commentnum)        
             article.save()
 
     # 上述为文章显示和阅读量显示
-    articlecount = articles.__len__()
+    articlecount = len(articles)
          
     paginator = Paginator(articles,settings.SET_PAGE_FOR_ARTICLES)
     # print(dir(paginator))
@@ -185,7 +187,7 @@ def articleCreate(request):
         return render(request, template,{'articleForm':ArticleForm(),'tags':Tag.objects.all(),'page_title':'新增博客'})
 
     # POST
-    articleForm = ArticleForm(request.POST)
+    articleForm = ArticleForm(request.POST,request.FILES)
     
     if not articleForm.is_valid():
         return render(request, template, {'articleForm':articleForm})
@@ -222,17 +224,11 @@ def articleRead(request,articleId):
         template = 'main_article/articleRead.html'
         
         articleToRead = get_object_or_404(Article, id=articleId)
-        subtitle_list = title_list(articleToRead.content)
-        # print(subtitle_list)
         logger.info(articleToRead)
-        
+        # print(articleToRead.content)
         if not request.COOKIES.get('blog_%s_read_num' % articleId):
-            # print('read+1')
             articleToRead.read_num += 1
             articleToRead.save()
-        
-        # print()
-        # print(Comment.objects.filter(post=articleToRead).__len__())
     
     # print(articleToRead.tags.all())
     similar_article = articleToRead.tags.similar_objects()
@@ -241,11 +237,10 @@ def articleRead(request,articleId):
  
     context = {
     'article': articleToRead,
-    'comment_num':Comment.objects.filter(post=articleToRead).__len__(),
+    'comment_num':len(Comment.objects.filter(post=articleToRead)),
     'similar_articles':similar_article[:5],
     'superlikes':articleToRead.superlikes.all()[:5],
-    'page_title':'{}的博客'.format(articleToRead.title),
-    'title_list_html':subtitle_list
+    'page_title':'{}的博客'.format(articleToRead.title)
     }
     
     '''
@@ -296,7 +291,6 @@ def articleUpdate(request, articleId):
         return render(request, template, {'articleForm':articleForm, 'article':articleToUpdate,'tags':Tag.objects.all(),'page_title':'修改博客'})
     # POST
     articleForm = ArticleForm(request.POST,request.FILES,instance=articleToUpdate)
-    
     # print(articleForm)
     if not articleForm.is_valid():
         return render(request, template, {'articleForm':articleForm, 'article':articleToUpdate})
@@ -304,7 +298,6 @@ def articleUpdate(request, articleId):
     articleUpdateForm = articleForm.save(commit=False)
     
     articleUpdateForm.upDateTime = timezone.now()
-    # articleUpdateForm.excerpt = strip_tags(articleUpdateForm.content)[:200]
     articleUpdateForm.is_thumbnail = False
     articleUpdateForm.save()
     articleForm.save_m2m()
@@ -329,7 +322,7 @@ def articleSearch(request):
                                       Q(content__icontains=searchTerm))
     context = {'articles':articles,
                'searchTerm' : searchTerm,
-               'article_num':articles.__len__(),
+               'article_num':len(articles),
                'page_title':'搜索结果'
                }
     return render(request, 'main_article/articleSearch.html', context)
@@ -340,8 +333,8 @@ def articleLike(request,articleId):
     articleToRead.save()
     # return redirect('main_article:articleRead', articleId=articleId)
     '''
-            若采用上述回访形式的话，点赞会重新访问articleRead的url，导致阅读量也会加1
-            采用下面只回复范本，url没有变。但是按刷新按钮时点赞会自动加1.
+    若采用上述跳转形式的话，点赞会重新访问articleRead的url，导致阅读量也会加1
+    采用下面只回调模版，url没有变。但是按刷新按钮时点赞会自动加1.
     '''
     context = {
         'article': articleToRead,
@@ -357,7 +350,7 @@ def categoryControl(request):
     if request.method =='GET':       
         context = {'categorys':category,
                    'guestbook_categorys':guestbook_category,
-                   'articlecount':category.__len__(),
+                   'articlecount':len(category),
                    'page_title':'分类控制'
                    }
         return render(request, template,context)
@@ -367,7 +360,7 @@ def categoryControl(request):
     # print('主页分类:'+str(content))
     # print('留言分类:'+str(guestbook_content))
     if content == '' or guestbook_content == '':
-        context = {'categorys':category,'guestbook_categorys':guestbook_category,'articlecount':category.__len__()}
+        context = {'categorys':category,'guestbook_categorys':guestbook_category,'articlecount':len(category)}
         messages.error(request, '不能为空')
         return render(request, template,context)   
     try:
@@ -454,7 +447,7 @@ def categoryUpdate(request,categoryId):
     template = 'main_article/categoryUpdate.html'
     category = get_object_or_404(Category,id=categoryId)
     if request.method == 'GET':
-        return render(request, template,{'category':category,'page_title':'更新分类'})
+        return render(request, template,{'category':category,'page_title':'更新博客分类'})
     # POST
     content = request.POST.get('content')
     category.name = content
@@ -848,4 +841,25 @@ def changepassword(request):
     context['submit_text'] = '提交'
     context['style_form'] = 'primary'
     return render(request,template,context)
+
+def get_chat_offline(request,username):
+    get_offline = request.GET.get('offline','')
+    print(get_offline)
+    print(username)
+    data = {}
+    if get_offline =='true':
+        current_message = Message.objects.filter(sender=request.user).last()
+        print('ready send')
+        notify.send(
+            request.user,
+            recipient= current_message.dialog.opponent if not current_message.dialog.opponent.username==current_message.sender.username\
+            else current_message.dialog.owner,
+            verb='私信了你',
+            description=current_message.text
+        )
+        print('sended')
+        data['status'] = '{} is offline'.format(username)
+        return JsonResponse(data)
+    data['status'] = '{} is online,do not send notifications'.format(username)
+    return JsonResponse(data)
 # Create your views here.    

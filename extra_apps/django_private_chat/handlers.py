@@ -5,7 +5,6 @@ import websockets
 from django.contrib.auth import get_user_model
 from . import models, router
 from .utils import get_user_from_session, get_dialogs_with_user
-
 logger = logging.getLogger('django-private-dialog')
 ws_connections = {}
 

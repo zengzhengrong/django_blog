@@ -1,0 +1,9 @@
+{% load catalog_tags %}
+{% render_catalog_html content as html %}
+{% if html %}
+        {{ html|safe}}
+{% else %}
+        <ul>
+        <li>No catalog</li>
+        <ul>
+{% endif %}

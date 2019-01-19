@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+import urllib.parse
+import codecs
+import sys
+import re
+import time
 from django.db import models
 from django.contrib.auth.models import User
 from extra_apps.ckeditor_uploader.fields import RichTextUploadingField
@@ -8,12 +13,7 @@ from django.utils.html import strip_tags
 from taggit.managers import TaggableManager
 from django.urls import reverse
 from django.utils import timezone
-from .utils import frist_img,img_wordcloud,custom_img
-import urllib.parse
-import codecs
-import sys
-import re
-import time
+from .utils import frist_img,img_wordcloud,custom_img,get_article_content,get_catalog_math
 #
 
 
@@ -162,53 +162,8 @@ class Article(models.Model):
         # 创建缩略图
         if not self.is_thumbnail:
             self.thumbnail = self.get_thumb_img()
-            self.is_thumbnail = True
-        # 为<h4><h5>添加id
-        if not self.is_subtitle_list:  
-            pattern = re.compile('<h\d.*</h\d>')
-            math = pattern.findall(self.content)# list[math1,math2]  
-            # print(True)
-            # print(math)
-            content_list = list(self.content)
-            # print(content_list)
-            start = 0 
-            id_list = []
-            for add_id in range(content_list.count('h')):
-                try:
-                    index_h = content_list.index('h',start)
-                except:
-                    break
-                # print(index_h)
-                
-                start = index_h+1
-                if content_list[index_h-1] =='<' and content_list[index_h-1] !='/':
-                    content_list.insert(index_h+2, ' id')
-                # print(content_list)
-            try:
-                start_name = 0
-                # print(content_list.count(' id'))
-                # print(len(math))
-                # print(content_list.count(' id') == len(math))
-                if content_list.count(' id') == len(math):
-                    for subtitle_index in range(len(math)):
-                        math_replace = strip_tags(math[subtitle_index].replace('：' \
-                        if math[subtitle_index].find(':') == -1 else ':',''))
-                        id_index = content_list.index(' id', start_name)
-                        start_name = id_index+1
-                        idname = content_list[id_index].replace('id','id={}'.format(math_replace))
-                        del content_list[id_index]
-                        content_list.insert(id_index,idname)
-                        # print(idname)
-                        # print(content_list) 
-                
-            except Exception as e:
-                print(e)
-            self.content = ''.join(content_list)
-            if len(math)>0:
-                # print(math)
-                self.is_subtitle_list = True
-            # print(self.content)
-                
+            if self.thumbnail:
+                self.is_thumbnail = True
         super(Article,self).save(*args, **kwargs)
         
     def get_absolute_url(self):

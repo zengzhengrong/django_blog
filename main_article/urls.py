@@ -1,7 +1,6 @@
 from django.urls import re_path
 from main_article import views
 from main_article.views import RssFeed
-
 urlpatterns = [
     #article
     re_path(r'^$',views.article,name = 'article'),
@@ -40,5 +39,5 @@ urlpatterns = [
     re_path(r'^change_email/$',views.changeemail, name='changeemail'),
     re_path(r'^change_password/$',views.changepassword, name='changepassword'),
     re_path(r'^send_email_code/$',views.send_email_code, name='send_email_code'),
-    
+    re_path(r'^get_chat_offline/(?P<username>[\w.@+-]+)$',views.get_chat_offline, name='get_chat_offline'),
     ] 

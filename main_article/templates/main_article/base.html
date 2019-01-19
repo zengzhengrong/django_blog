@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>{% block page_title %}{% endblock %}</title>
     <meta name="description" content="">
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" href="{% static 'main_article/img/zr.png'%}" type="image/x-icon">
     
     
@@ -65,13 +65,13 @@
                           {% include 'main_article/aboutme.html'%}		
                         {% endif %}
                         {%if not article %}			
-  		                        
+                            {% include 'main_article/featuredpost.html' %}    
   		                    {% include 'main_article/relatedpost.html' %}
-                          {% include 'main_article/archivepost.html' %}
+                            {% include 'main_article/archivepost.html' %}
   		                    {% include 'main_article/tags.html'%}
                         {% else %}
-                          {% if article.is_subtitle_list %}   
-                          {% include 'main_article/title_list.html' %}
+                          {% if article %}
+                            {% include 'main_article/article_catalog.html' %}
                           {% endif %}
                         {% endif %}
                                            
@@ -157,9 +157,8 @@
       alert(msg);
     }
     </script>
-    
-    <!-- 预处理js cookie交互跨站请求-->
     {% block extra_js %}{% endblock extra_js %}
+    <!-- 预处理js cookie交互跨站请求-->
 	<script>
 	var csrftoken = $.cookie('csrftoken');
 	  function csrfSafeMethod(method) {

@@ -1,3 +1,4 @@
+{% if title_list_html %}
 <div class="fixed">
   <div class="aside-widget-fixed img-rounded" id="title_list">
       <header>
@@ -6,6 +7,7 @@
       {{title_list_html|safe}}   
   </div>
 </div>
+{% endif %}
 <!-- 
 <script type="text/javascript">
 $(window).scroll(function() {

@@ -1,16 +1,15 @@
 import logging
 import os
 import re
-from urllib import request
-
 import jieba
+from urllib import request
 from django.conf import settings
 from django.template.defaultfilters import striptags
 from imagekit import ImageSpec
 from imagekit.processors import ResizeToFill
 from PIL import Image
 from wordcloud import WordCloud
-
+from django.utils.html import strip_tags
 # 配置日志信息
 
 class Thumbnail(ImageSpec):
@@ -147,3 +146,51 @@ def img_wordcloud(title,filename,file_path=settings.MEDIA_ROOT +'/'+'title'):
 def custom_img(img):
     print(img)
     return '/media/title/'+ str(img)
+
+# 生成文章目录
+
+def get_catalog_math(content):
+    pattern = re.compile('<h\d.*</h\d>')
+    math = pattern.findall(content)# list[math1,math2]
+    return math
+
+def make_catalog_mark(content):
+    content_list = list(content)
+    start = 0
+    for add_id in range(content_list.count('h')):
+        try:
+            index_h = content_list.index('h',start)
+            if content_list[index_h-1] =='<' and content_list[index_h-1] !='/':
+                content_list.insert(index_h+2, ' id')
+            start = index_h+1
+        except:
+            break
+    return content_list
+def replace_catalog_mark(content):
+    math =get_catalog_math(content)
+    if math == 0 :
+        return None
+    content_list = make_catalog_mark(content)
+    try:
+        start_name = 0
+        if content_list.count(' id') == len(math):
+            for subtitle_index in range(len(math)):
+                math_replace = strip_tags(math[subtitle_index].replace('：' \
+                if math[subtitle_index].find(':') == -1 else ':',''))
+                id_index = content_list.index(' id', start_name)
+                start_name = id_index+1
+                idname = content_list[id_index].replace('id','id={}'.format(math_replace))
+                del content_list[id_index]
+                content_list.insert(id_index,idname)
+                print(idname)
+                # print(content_list)
+    except Exception as e:
+        print(e)
+    return content_list
+
+def get_article_content(content):
+    get_content_list = replace_catalog_mark(content)
+    if not get_content_list :
+        return content
+    content = ''.join(get_content_list)
+    return content
