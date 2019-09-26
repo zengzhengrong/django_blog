@@ -111,10 +111,10 @@ WSGI_APPLICATION = 'blog.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME':'blogDB',
-        'USER':'postgres',
+        'NAME':'djangodb',
+        'USER':'djangodb',
         'PASSWORD':'5432',
-        'HOST':'localhost',
+        'HOST':'db',
         'PORT':'',
         
     }
@@ -264,7 +264,7 @@ CKEDITOR_BROWSE_SHOW_DIRS = True
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': "127.0.0.1:6379",
+        'LOCATION': "django-redis://django-redis:6379",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
