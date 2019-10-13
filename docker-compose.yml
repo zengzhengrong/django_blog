@@ -11,7 +11,6 @@ services:
       - -c
       - |
         service nginx start
-        django-command.sh
 
     volumes:
       - django_web:/web
@@ -32,7 +31,6 @@ services:
     container_name: django-redis
     image: redis:alpine
     restart: always
-    command: redis-server /etc/redis/redis.conf
 
 volumes:
   pgdata-django:

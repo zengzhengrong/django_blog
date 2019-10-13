@@ -17,4 +17,4 @@ RUN python3 manage.py collectstatic
 # RUN python3 -m populate.all 
     # service nginx start \
 
-CMD ["bash"]
+ENTRYPOINT [ "django-command.sh" ]
