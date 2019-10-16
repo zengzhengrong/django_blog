@@ -25,7 +25,7 @@ SECRET_KEY = 'qq3x%odtj1jaf*=5c3!7kp@fkbd@b6cs=af%_($(_lhoh34dc3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '172.96.18.168','localhost', '.pancake.red' ,'.znegzhengrong.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

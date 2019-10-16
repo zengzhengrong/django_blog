@@ -6,12 +6,12 @@ services:
     restart: always
     ports:
       - "808:808"
-    command: 
-      - /bin/bash
-      - -c
-      - |
-        service nginx start
-
+    # command: 
+    #   - /bin/bash
+    #   - -c
+    #   - |
+    #    python3 manage.py migrate
+    #    python3 -m populate.all 
     volumes:
       - django_web:/web
     depends_on:
