@@ -6,6 +6,7 @@ services:
     restart: always
     ports:
       - "808:808"
+      - "5002:5002"
     # command: 
     #   - /bin/bash
     #   - -c

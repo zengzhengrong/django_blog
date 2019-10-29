@@ -8,8 +8,11 @@ echo "makte migrate"
 python3 manage.py migrate
 echo "populating data"
 python3 -m populate.all
+echo "run_chat_server"
+python3 manage.py run_chat_server &
 echo "run gunicorn"
 gunicorn -w 3 --access-logfile gunicorn.log --bind unix:/web/demo.sock blog.wsgi:application
+
 
 
 

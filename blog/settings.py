@@ -25,6 +25,7 @@ SECRET_KEY = 'qq3x%odtj1jaf*=5c3!7kp@fkbd@b6cs=af%_($(_lhoh34dc3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+DEPOLY_HOST = '192.168.56.135'
 ALLOWED_HOSTS = ['*']
 
 
@@ -435,21 +436,10 @@ ACCOUNT_LOGOUT_ON_GET = True
 如果用户没有登录，它将与login_required装饰器相同 。
 如果用户登录但没有验证的电子邮件地址，则会自动重新发送电子邮件验证邮件，并向用户显示通知他们需要验证其电子邮件地址的页面。
 '''
-
-
 '''
-#ACCOUNT_LOGIN_ON_PASSWORD_RESET = False(default)
-By changing this setting to True, 
-users will automatically be logged in once they have reset their password. 
-By default they are redirected to the password reset donepage.
-
-'''
-
-
-'''
+ACCOUNT_LOGIN_ON_PASSWORD_RESET = False(default)
 ACCOUNT_SESSION_REMEMBER (=None) Controls the life time of the session. 
-Set to None to ask the user
-(“Remember me?”), False to not remember, and True to always remember.
+
 '''
 #crispy_forms css[bootstrap,bootstrap3,bootstrap4]
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -462,8 +452,8 @@ AUTH_USER_MODEL = 'auth.user'
 ADMINS = (('admin', '506862754@qq.com'),) 
 #online_status,5分钟(300秒)视为不在线，不填默认600秒
 USER_ONLINE_TIMEOUT = 900
-#private_chat 私信设置，本机port:5002
-CHAT_WS_SERVER_HOST = '127.0.0.1'
+#private_chat 私信设置，本机port:5002, 在docker 中这个为容器内部的ip
+CHAT_WS_SERVER_HOST = 'web'
 CHAT_WS_SERVER_PORT = 5002
 CHAT_WS_SERVER_PROTOCOL = 'ws'
 DATETIME_FORMAT = 'Y-m-d H:i'

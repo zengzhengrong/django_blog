@@ -1,5 +1,5 @@
 FROM zengzhengrong889/ubuntu:2019919
-MAINTAINER zengzhengrong
+LABEL maintainer="zengzhengrong"
 ENV PYTHONUNBUFFERED 1
 
 WORKDIR /web

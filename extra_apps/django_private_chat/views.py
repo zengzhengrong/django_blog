@@ -39,8 +39,9 @@ class DialogListView(LoginRequiredMixin, generic.ListView):
             context['opponent_username'] = context['active_dialog'].opponent.username
         else:
             context['opponent_username'] = context['active_dialog'].owner.username
+        # on docker-compose CHAT_WS_SERVER_HOST must be your outside server (connet internet)
         context['ws_server_path'] = 'ws://{}:{}/'.format(
-            settings.CHAT_WS_SERVER_HOST,
+            settings.CHAT_WS_SERVER_HOST if settings.CHAT_WS_SERVER_HOST != 'web' else settings.DEPOLY_HOST,
             settings.CHAT_WS_SERVER_PORT,
         )
         return context
